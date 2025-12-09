@@ -208,3 +208,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.8+ (for ROS 2 compatibility), Markdown for documentation + ROS 2 (Humble Hawksbill recommended), rclpy (Python ROS client library), URDF (Unified Robot Description Format), Gazebo/ignition for simulation (001-physical-ai-robotics)
+- Files (URDF models, launch files, parameter files, documentation) (001-physical-ai-robotics)
+
+## Recent Changes
+- 001-physical-ai-robotics: Added Python 3.8+ (for ROS 2 compatibility), Markdown for documentation + ROS 2 (Humble Hawksbill recommended), rclpy (Python ROS client library), URDF (Unified Robot Description Format), Gazebo/ignition for simulation
