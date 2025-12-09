@@ -1,0 +1,18 @@
+# ROS 2 Humble Hawksbill dependencies
+rclpy>=3.0.0
+ros2cli>=0.9.0
+
+# General Python dependencies for robotics
+numpy>=1.19.0
+scipy>=1.7.0
+matplotlib>=3.3.0
+pyyaml>=5.4.0
+
+# For AI agent integration
+torch>=1.9.0
+torchvision>=0.10.0
+tensorflow>=2.6.0
+
+# Testing
+pytest>=6.0.0
+pytest-cov>=2.10.0

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="800"
+   height="600"
+   viewBox="0 0 800 600"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="ros2-architecture.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="400"
+     inkscape:cy="300"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:pagecheckerboard="true" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>ROS 2 Architecture for Humanoid Robotics</dc:title>
+        <dc:description>Diagram showing ROS 2 nodes, topics, services, and actions connecting Python AI agents to robot controllers</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <!-- Robot -->
+    <g
+       id="robot"
+       transform="translate(600, 300)">
+      <circle
+         id="head"
+         cx="0"
+         cy="-80"
+         r="30"
+         fill="none"
+         stroke="#000000"
+         stroke-width="2" />
+      <rect
+         id="torso"
+         x="-25"
+         y="-40"
+         width="50"
+         height="80"
+         fill="none"
+         stroke="#000000"
+         stroke-width="2" />
+      <line
+         id="left-arm"
+         x1="-25"
+         y1="-30"
+         x2="-60"
+         y2="0"
+         stroke="#000000"
+         stroke-width="4" />
+      <line
+         id="right-arm"
+         x1="25"
+         y1="-30"
+         x2="60"
+         y2="0"
+         stroke="#000000"
+         stroke-width="4" />
+      <line
+         id="left-leg"
+         x1="-15"
+         y1="40"
+         x2="-15"
+         y2="100"
+         stroke="#000000"
+         stroke-width="4" />
+      <line
+         id="right-leg"
+         x1="15"
+         y1="40"
+         x2="15"
+         y2="100"
+         stroke="#000000"
+         stroke-width="4" />
+    </g>
+
+    <!-- AI Agent Node -->
+    <g
+       id="ai-node"
+       transform="translate(100, 150)">
+      <rect
+         x="-50"
+         y="-30"
+         width="100"
+         height="60"
+         rx="10"
+         ry="10"
+         fill="#e3f2fd"
+         stroke="#1976d2"
+         stroke-width="2" />
+      <text
+         x="0"
+         y="5"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="14"
+         fill="#000000">AI Agent</text>
+      <text
+         x="0"
+         y="25"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="12"
+         fill="#666666">Node</text>
+    </g>
+
+    <!-- Sensor Processing Node -->
+    <g
+       id="sensor-node"
+       transform="translate(100, 300)">
+      <rect
+         x="-50"
+         y="-30"
+         width="100"
+         height="60"
+         rx="10"
+         ry="10"
+         fill="#e8f5e8"
+         stroke="#388e3c"
+         stroke-width="2" />
+      <text
+         x="0"
+         y="5"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="14"
+         fill="#000000">Sensor</text>
+      <text
+         x="0"
+         y="25"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="12"
+         fill="#666666">Processing</text>
+    </g>
+
+    <!-- Behavior Manager Node -->
+    <g
+       id="behavior-node"
+       transform="translate(100, 450)">
+      <rect
+         x="-50"
+         y="-30"
+         width="100"
+         height="60"
+         rx="10"
+         ry="10"
+         fill="#fff3e0"
+         stroke="#f57c00"
+         stroke-width="2" />
+      <text
+         x="0"
+         y="5"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="14"
+         fill="#000000">Behavior</text>
+      <text
+         x="0"
+         y="25"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="12"
+         fill="#666666">Manager</text>
+    </g>
+
+    <!-- State Estimation Node -->
+    <g
+       id="state-node"
+       transform="translate(350, 300)">
+      <rect
+         x="-50"
+         y="-30"
+         width="100"
+         height="60"
+         rx="10"
+         ry="10"
+         fill="#f3e5f5"
+         stroke="#7b1fa2"
+         stroke-width="2" />
+      <text
+         x="0"
+         y="5"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="14"
+         fill="#000000">State</text>
+      <text
+         x="0"
+         y="25"
+         text-anchor="middle"
+         font-family="Arial"
+         font-size="12"
+         fill="#666666">Estimation</text>
+    </g>
+
+    <!-- Arrows showing communication -->
+    <marker
+       id="arrowhead"
+       markerWidth="10"
+       markerHeight="7"
+       refX="9"
+       refY="3.5"
+       orient="auto">
+      <polygon
+         points="0 0, 10 3.5, 0 7"
+         fill="#333333" />
+    </marker>
+
+    <!-- AI to Robot -->
+    <path
+       d="M 150,150 C 300,150 300,300 400,300"
+       stroke="#333333"
+       stroke-width="2"
+       fill="none"
+       marker-end="url(#arrowhead)" />
+    <text
+       x="225"
+       y="130"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">Commands</text>
+
+    <!-- Sensor to AI -->
+    <path
+       d="M 400,300 C 300,300 300,150 150,150"
+       stroke="#333333"
+       stroke-width="2"
+       fill="none"
+       marker-end="url(#arrowhead)" />
+    <text
+       x="225"
+       y="170"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">Sensor Data</text>
+
+    <!-- Sensor to State Estimation -->
+    <line
+       x1="150"
+       y1="300"
+       x2="300"
+       y2="300"
+       stroke="#333333"
+       stroke-width="2"
+       marker-end="url(#arrowhead)" />
+    <text
+       x="200"
+       y="285"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">Processed</text>
+    <text
+       x="200"
+       y="300"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">Data</text>
+
+    <!-- State Estimation to AI -->
+    <line
+       x1="300"
+       y1="300"
+       x2="150"
+       y2="150"
+       stroke="#333333"
+       stroke-width="2"
+       marker-end="url(#arrowhead)" />
+    <text
+       x="220"
+       y="230"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">State</text>
+    <text
+       x="220"
+       y="245"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">Estimate</text>
+
+    <!-- Behavior Manager to Robot -->
+    <path
+       d="M 150,450 C 300,450 300,400 400,350"
+       stroke="#333333"
+       stroke-width="2"
+       fill="none"
+       marker-end="url(#arrowhead)" />
+    <text
+       x="250"
+       y="430"
+       font-family="Arial"
+       font-size="12"
+       fill="#333333">Behaviors</text>
+  </g>
+</svg>

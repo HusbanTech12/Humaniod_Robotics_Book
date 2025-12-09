@@ -2,46 +2,37 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# ROS 2 for Humanoid Robotics
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Welcome to the **ROS 2 for Humanoid Robotics** educational module. This comprehensive guide teaches students, researchers, and engineers how to apply AI to physical humanoid systems using ROS 2.
+
+## About This Module
+
+This module focuses on "The Robotic Nervous System (ROS 2)" - bridging the gap between digital intelligence and physical execution. You'll learn:
+
+- ROS 2 architecture, nodes, topics, services, and actions
+- How to connect Python AI agents to ROS 2 controllers using rclpy
+- How to create, launch, and manage ROS 2 packages and parameter files
+- How to design humanoid robot models using URDF (Unified Robot Description Format)
+- How to implement multi-node communication for robot systems
 
 ## Getting Started
 
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+To get started with this educational module, begin with the setup instructions and progress through the modules in order.
 
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- Ubuntu 22.04 LTS (recommended) or compatible Linux system
+- ROS 2 Humble Hawksbill installed
+- Python 3.8 or higher
+- Git installed
 
-## Generate a new site
+## Module Structure
 
-Generate a new Docusaurus site using the **classic template**.
+This educational module is organized into several key sections:
 
-The classic template will automatically be added to your project after you run the command:
+1. **Getting Started** - Setup and basic concepts
+2. **Module 1: The Robotic Nervous System (ROS 2)** - Core ROS 2 concepts for humanoid robotics
+3. **Tutorials** - Hands-on examples and practical applications
 
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+Each section builds upon the previous, creating a comprehensive learning path for humanoid robotics development with ROS 2.

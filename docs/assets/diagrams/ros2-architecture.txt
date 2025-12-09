@@ -1,0 +1,75 @@
+# ROS 2 Architecture Diagram
+
+## Basic Communication Patterns
+
+### Publisher/Subscriber Pattern
+```
+┌─────────────┐          ┌─────────────┐
+│ Publisher   │ Publish  │ Subscriber  │
+│ Node        │ ────────▶│ Node        │
+│ (e.g.,     │ Topic:   │ (e.g.,      │
+│  sensor)    │ /topic   │  processor) │
+└─────────────┘          └─────────────┘
+```
+
+### Service Pattern
+```
+┌─────────────┐              ┌─────────────┐
+│ Service     │ Request/     │ Service     │
+│ Client      │ Response     │ Server      │
+│ Node        │ ◄───────────▶│ Node        │
+│ (e.g.,     │              │ (e.g.,      │
+│  controller)│              │  actuator)  │
+└─────────────┘              └─────────────┘
+```
+
+### Action Pattern
+```
+┌─────────────┐ Goal/         ┌─────────────┐
+│ Action      │ Cancel/       │ Action      │
+│ Client      │ Result/       │ Server      │
+│ Node        │ Feedback      │ Node        │
+│ (e.g.,     │ ◄─────────────▶│ (e.g.,      │
+│  planner)   │               │  executor)  │
+└─────────────┘               └─────────────┘
+```
+
+## Humanoid Robot System Architecture
+
+```
+                    ┌─────────────────┐
+                    │   AI Agent      │
+                    │   Node          │
+                    └─────────┬───────┘
+                              │ Commands
+                    ┌─────────▼─────────┐
+                    │  Behavior Manager │
+                    │     Node          │
+                    └─────────┬─────────┘
+                              │ Behaviors
+        ┌─────────────────────┼─────────────────────┐
+        │ Sensors             │ Actions             │ Control
+┌───────▼────────┐    ┌───────▼────────┐    ┌──────▼────────┐
+│ Sensor         │    │ Action         │    │ Joint Control │
+│ Processing     │    │ Server         │    │ Nodes         │
+│ Nodes          │    │ Nodes          │    │ (multiple)    │
+└────────────────┘    └────────────────┘    └───────────────┘
+        │                       │                       │
+        └───────────────────────┼───────────────────────┘
+                                │
+                        ┌───────▼────────┐
+                        │ Humanoid Robot │
+                        │ (URDF Model)   │
+                        └────────────────┘
+```
+
+## Key Components for Humanoid Robotics
+
+1. **AI Bridge Node**: Connects AI algorithms to ROS 2
+2. **Sensor Processing Nodes**: Handle data from IMU, cameras, etc.
+3. **Control Nodes**: Manage joint actuators and robot behavior
+4. **State Estimation**: Tracks robot pose and environment
+5. **Behavior Manager**: Coordinates complex robot behaviors
+```
+
+This text-based diagram can be used as a reference for creating an actual SVG diagram. Now I'll mark task T020 as completed:
