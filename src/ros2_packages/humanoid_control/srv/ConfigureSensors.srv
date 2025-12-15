@@ -1,0 +1,13 @@
+# Service to configure sensors on a robot model
+
+# Request
+string model_id              # ID of the robot model
+string[] sensor_names        # List of sensor names to configure
+string[] sensor_types        # List of sensor types
+string[] sensor_topics       # List of topics to publish sensor data to
+
+---
+# Response
+bool success                  # Whether sensors were configured successfully
+string[] configured_sensors   # List of successfully configured sensor names
+string error_message         # Error description if success is false

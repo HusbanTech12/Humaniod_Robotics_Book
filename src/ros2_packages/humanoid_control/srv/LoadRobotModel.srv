@@ -1,0 +1,12 @@
+# Service to load a humanoid robot model into simulation
+
+# Request
+string model_file_path  # Path to URDF/SDF file
+string model_name       # Name to assign to the model in simulation
+geometry_msgs/Pose initial_pose  # Initial position and orientation
+
+---
+# Response
+bool success            # Whether the model was loaded successfully
+string model_id        # Unique identifier for the loaded model
+string error_message   # Error description if success is false

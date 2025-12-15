@@ -1,0 +1,12 @@
+# Service to start physics simulation
+
+# Request
+string world_file_path        # Path to the world file to load
+float64 real_time_factor      # Real time factor for the simulation
+bool enable_gui               # Whether to enable the GUI
+
+---
+# Response
+bool success                  # Whether simulation started successfully
+string simulation_id          # Unique identifier for the simulation instance
+string error_message          # Error description if success is false

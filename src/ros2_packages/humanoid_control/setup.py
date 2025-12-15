@@ -37,6 +37,11 @@ setup(
             'sensor_processing_node = humanoid_control.sensor_processing_node:main',
             'state_estimation_node = humanoid_control.state_estimation_node:main',
             'behavior_manager_node = humanoid_control.behavior_manager_node:main',
+            'physics_validation_test = humanoid_control.physics_validation_test:main',
+            'joint_validation_test = humanoid_control.joint_validation_test:main',
+            'sensor_data_publisher = humanoid_control.sensor_data_publisher:main',
+            'sensor_verification_test = humanoid_control.sensor_verification_test:main',
+            'sensor_quality_test = humanoid_control.sensor_quality_test:main',
         ],
     },
 )

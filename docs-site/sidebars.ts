@@ -44,6 +44,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Module 2: The Digital Twin (Gazebo & Unity)',
+      items: [
+        'module-2-digital-twin/intro',
+        'module-2-digital-twin/humanoid-model-configuration',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Tutorials',
       items: [
         'tutorials/ai-agent-ros2-bridge',

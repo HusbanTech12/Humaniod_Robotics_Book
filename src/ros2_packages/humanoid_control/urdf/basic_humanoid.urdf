@@ -222,7 +222,35 @@
     <origin xyz="0 0 -0.25" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-0.78" upper="0.78" effort="5.0" velocity="1.0"/>
+    <!-- Force/Torque sensor in the wrist joint -->
+    <gazebo>
+      <provideFeedback>true</provideFeedback>
+    </gazebo>
   </joint>
+
+  <!-- Gazebo plugin for Force/Torque sensor in right wrist -->
+  <gazebo reference="right_wrist_joint">
+    <sensor name="right_wrist_force_torque" type="force_torque">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <force_torque>
+        <frame>child</frame>
+        <measure_direction>child_to_parent</measure_direction>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.05</stddev>
+        </noise>
+      </force_torque>
+      <plugin name="right_wrist_ft_plugin" filename="libgazebo_ros_ft_sensor.so">
+        <ros>
+          <namespace>/humanoid</namespace>
+          <remapping>~/out:=right_wrist/ft_sensor</remapping>
+        </ros>
+        <frame_name>right_wrist_joint</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
 
   <!-- Left Upper Leg -->
   <link name="left_upper_leg">
@@ -309,7 +337,35 @@
     <origin xyz="0 0 -0.4" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-0.78" upper="0.78" effort="10.0" velocity="1.0"/>
+    <!-- Force/Torque sensor in the ankle joint -->
+    <gazebo>
+      <provideFeedback>true</provideFeedback>
+    </gazebo>
   </joint>
+
+  <!-- Gazebo plugin for Force/Torque sensor in left ankle -->
+  <gazebo reference="left_ankle_joint">
+    <sensor name="left_ankle_force_torque" type="force_torque">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <force_torque>
+        <frame>child</frame>
+        <measure_direction>child_to_parent</measure_direction>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.1</stddev>
+        </noise>
+      </force_torque>
+      <plugin name="left_ankle_ft_plugin" filename="libgazebo_ros_ft_sensor.so">
+        <ros>
+          <namespace>/humanoid</namespace>
+          <remapping>~/out:=left_ankle/ft_sensor</remapping>
+        </ros>
+        <frame_name>left_ankle_joint</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
 
   <!-- Right Upper Leg -->
   <link name="right_upper_leg">
@@ -396,7 +452,35 @@
     <origin xyz="0 0 -0.4" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-0.78" upper="0.78" effort="10.0" velocity="1.0"/>
+    <!-- Force/Torque sensor in the ankle joint -->
+    <gazebo>
+      <provideFeedback>true</provideFeedback>
+    </gazebo>
   </joint>
+
+  <!-- Gazebo plugin for Force/Torque sensor in right ankle -->
+  <gazebo reference="right_ankle_joint">
+    <sensor name="right_ankle_force_torque" type="force_torque">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <force_torque>
+        <frame>child</frame>
+        <measure_direction>child_to_parent</measure_direction>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.1</stddev>
+        </noise>
+      </force_torque>
+      <plugin name="right_ankle_ft_plugin" filename="libgazebo_ros_ft_sensor.so">
+        <ros>
+          <namespace>/humanoid</namespace>
+          <remapping>~/out:=right_ankle/ft_sensor</remapping>
+        </ros>
+        <frame_name>right_ankle_joint</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
 
   <!-- IMU Sensor in Head -->
   <link name="imu_link">
@@ -412,6 +496,33 @@
     <origin xyz="0.05 0 0" rpy="0 0 0"/>
   </joint>
 
+  <!-- LiDAR Sensor in Head -->
+  <link name="lidar_link">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.02"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.05" radius="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="head"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.08 0 0" rpy="0 0 0"/>
+  </joint>
+
   <!-- Gazebo plugin for IMU -->
   <gazebo reference="imu_link">
     <sensor name="imu_sensor" type="imu">
@@ -423,19 +534,25 @@
           <x>
             <noise type="gaussian">
               <mean>0.0</mean>
-              <stddev>2e-4</stddev>
+              <stddev>1.7e-2</stddev>
+              <bias_mean>0.0</bias_mean>
+              <bias_stddev>1.0e-5</bias_stddev>
             </noise>
           </x>
           <y>
             <noise type="gaussian">
               <mean>0.0</mean>
-              <stddev>2e-4</stddev>
+              <stddev>1.7e-2</stddev>
+              <bias_mean>0.0</bias_mean>
+              <bias_stddev>1.0e-5</bias_stddev>
             </noise>
           </y>
           <z>
             <noise type="gaussian">
               <mean>0.0</mean>
-              <stddev>2e-4</stddev>
+              <stddev>1.7e-2</stddev>
+              <bias_mean>0.0</bias_mean>
+              <bias_stddev>1.0e-5</bias_stddev>
             </noise>
           </z>
         </angular_velocity>
@@ -443,23 +560,141 @@
           <x>
             <noise type="gaussian">
               <mean>0.0</mean>
-              <stddev>1.7e-2</stddev>
+              <stddev>1.7e-1</stddev>
+              <bias_mean>0.0</bias_mean>
+              <bias_stddev>0.01</bias_stddev>
             </noise>
           </x>
           <y>
             <noise type="gaussian">
               <mean>0.0</mean>
-              <stddev>1.7e-2</stddev>
+              <stddev>1.7e-1</stddev>
+              <bias_mean>0.0</bias_mean>
+              <bias_stddev>0.01</bias_stddev>
             </noise>
           </y>
           <z>
             <noise type="gaussian">
               <mean>0.0</mean>
-              <stddev>1.7e-2</stddev>
+              <stddev>1.7e-1</stddev>
+              <bias_mean>0.0</bias_mean>
+              <bias_stddev>0.01</bias_stddev>
             </noise>
           </z>
         </linear_acceleration>
       </imu>
+    </sensor>
+  </gazebo>
+
+  <!-- Gazebo plugin for LiDAR -->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar_sensor" type="ray">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1.0</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <namespace>/humanoid</namespace>
+          <remapping>~/out:=scan</remapping>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- Depth Camera Sensor in Head -->
+  <link name="camera_link">
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.02 0.04 0.02"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.02 0.04 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="head"/>
+    <child link="camera_link"/>
+    <origin xyz="0.09 0 0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo plugin for Depth Camera -->
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="depth">
+      <always_on>true</always_on>
+      <update_rate>30.0</update_rate>
+      <camera name="head_camera">
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <format>R8G8B8</format>
+          <width>640</width>
+          <height>480</height>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>10.0</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.05</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>30.0</updateRate>
+        <cameraName>/humanoid/camera</cameraName>
+        <imageTopicName>rgb/image_raw</imageTopicName>
+        <depthImageTopicName>depth/image_raw</depthImageTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <baseline>0.1</baseline>
+        <distortion_k1>0.00000001</distortion_k1>
+        <distortion_k2>0.00000001</distortion_k2>
+        <distortion_k3>0.00000001</distortion_k3>
+        <distortion_t1>0.00000001</distortion_t1>
+        <distortion_t2>0.00000001</distortion_t2>
+        <pointCloudCutoff>0.1</pointCloudCutoff>
+        <pointCloudCutoffMax>8.0</pointCloudCutoffMax>
+        <CxPrime>0.0</CxPrime>
+        <Cx>320.0</Cx>
+        <Cy>240.0</Cy>
+        <focalLength>320.0</focalLength>
+        <hackBaseline>0.0</hackBaseline>
+      </plugin>
     </sensor>
   </gazebo>
 
