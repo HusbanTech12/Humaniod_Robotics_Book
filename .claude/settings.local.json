@@ -12,7 +12,8 @@
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks)",
       "Bash(git add .)",
       "Bash(git merge 001-vla --allow-unrelated-histories -m \"Merge deployment configurations from 001-vla branch\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"chore: sync repository, standardize structure, and prepare for deployment\")"
     ],
     "deny": [],
     "ask": []
