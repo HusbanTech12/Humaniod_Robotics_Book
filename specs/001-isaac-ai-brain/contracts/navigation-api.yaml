@@ -1,0 +1,304 @@
+openapi: 3.0.0
+info:
+  title: Isaac ROS Navigation API
+  description: API for interacting with Isaac ROS navigation system based on Nav2
+  version: 1.0.0
+  contact:
+    name: Isaac ROS Team
+    url: https://nvidia-isaac-ros.github.io/
+    email: isaac-ros-bugs@nvidia.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local Isaac ROS navigation service
+
+paths:
+  /navigation/plan_path:
+    post:
+      summary: Plan a path to target location
+      description: Generate a collision-free path from current to target location using Nav2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathPlanningRequest'
+      responses:
+        '200':
+          description: Planned path
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PathPlanningResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /navigation/execute_path:
+    post:
+      summary: Execute a planned path
+      description: Execute the robot following a planned path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathExecutionRequest'
+      responses:
+        '200':
+          description: Path execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PathExecutionResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /navigation/cancel_goal:
+    post:
+      summary: Cancel current navigation goal
+      description: Cancel the current navigation goal and stop robot motion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelGoalRequest'
+      responses:
+        '200':
+          description: Goal cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelGoalResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /navigation/get_robot_pose:
+    get:
+      summary: Get current robot pose
+      description: Retrieve the current position and orientation of the robot
+      responses:
+        '200':
+          description: Current robot pose
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RobotPoseResponse'
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    PathPlanningRequest:
+      type: object
+      required:
+        - start_pose
+        - goal_pose
+      properties:
+        start_pose:
+          $ref: '#/components/schemas/Pose'
+        goal_pose:
+          $ref: '#/components/schemas/Pose'
+        robot_config:
+          $ref: '#/components/schemas/RobotConfiguration'
+        planner_config:
+          $ref: '#/components/schemas/PlannerConfiguration'
+
+    PathPlanningResponse:
+      type: object
+      properties:
+        path:
+          $ref: '#/components/schemas/Path'
+        planning_time:
+          type: number
+          description: Time taken for path planning in seconds
+        success:
+          type: boolean
+          description: Whether path planning was successful
+        error_message:
+          type: string
+          description: Error message if planning failed
+
+    PathExecutionRequest:
+      type: object
+      required:
+        - path
+        - execution_config
+      properties:
+        path:
+          $ref: '#/components/schemas/Path'
+        execution_config:
+          $ref: '#/components/schemas/ExecutionConfiguration'
+
+    PathExecutionResponse:
+      type: object
+      properties:
+        execution_id:
+          type: string
+          description: Unique ID for this execution
+        status:
+          type: string
+          enum: [PENDING, EXECUTING, COMPLETED, FAILED, CANCELLED]
+          description: Current execution status
+        estimated_completion_time:
+          type: number
+          description: Estimated time to complete execution in seconds
+
+    CancelGoalRequest:
+      type: object
+      properties:
+        execution_id:
+          type: string
+          description: ID of the execution to cancel (optional, cancels current if not specified)
+
+    CancelGoalResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether cancellation was successful
+        previous_status:
+          type: string
+          description: Status before cancellation
+
+    RobotPoseResponse:
+      type: object
+      properties:
+        pose:
+          $ref: '#/components/schemas/Pose'
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of pose measurement
+        frame_id:
+          type: string
+          description: Coordinate frame of the pose
+
+    Pose:
+      type: object
+      properties:
+        position:
+          $ref: '#/components/schemas/Position3D'
+        orientation:
+          $ref: '#/components/schemas/Quaternion'
+
+    Position3D:
+      type: object
+      properties:
+        x:
+          type: number
+          description: X coordinate in meters
+          example: 1.5
+        y:
+          type: number
+          description: Y coordinate in meters
+          example: 2.0
+        z:
+          type: number
+          description: Z coordinate in meters
+          example: 0.0
+
+    Quaternion:
+      type: object
+      properties:
+        x:
+          type: number
+          example: 0.0
+        y:
+          type: number
+          example: 0.0
+        z:
+          type: number
+          example: 0.707
+        w:
+          type: number
+          example: 0.707
+
+    Path:
+      type: object
+      properties:
+        waypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pose'
+          description: List of waypoints defining the path
+        path_length:
+          type: number
+          description: Total length of the path in meters
+        collision_free:
+          type: boolean
+          description: Whether the path is collision-free
+
+    RobotConfiguration:
+      type: object
+      properties:
+        robot_model:
+          type: string
+          description: Name of the robot model
+          example: "unitree_a1"
+        base_frame:
+          type: string
+          description: Base frame of the robot
+          example: "base_link"
+        footprint_radius:
+          type: number
+          description: Radius of robot footprint for collision checking
+          example: 0.3
+        max_linear_velocity:
+          type: number
+          description: Maximum linear velocity in m/s
+          example: 1.0
+        max_angular_velocity:
+          type: number
+          description: Maximum angular velocity in rad/s
+          example: 1.5
+
+    PlannerConfiguration:
+      type: object
+      properties:
+        global_planner:
+          type: string
+          enum: [navfn, global_planner, smac_planner]
+          description: Global planner to use
+          default: "navfn"
+        local_planner:
+          type: string
+          enum: [dwb_controller, teb_local_planner, rpp_local_planner]
+          description: Local planner to use
+          default: "dwb_controller"
+        planner_frequency:
+          type: number
+          description: Frequency of planning in Hz
+          default: 5.0
+        use_humanoid_constraints:
+          type: boolean
+          description: Whether to apply humanoid-specific kinematic constraints
+          default: true
+
+    ExecutionConfiguration:
+      type: object
+      properties:
+        controller_frequency:
+          type: number
+          description: Frequency of controller updates in Hz
+          default: 20.0
+        velocity_scaling_factor:
+          type: number
+          description: Factor to scale execution velocity
+          default: 1.0
+          minimum: 0.1
+          maximum: 2.0
+        obstacle_avoidance:
+          type: boolean
+          description: Whether to enable dynamic obstacle avoidance
+          default: true
+        safety_margin:
+          type: number
+          description: Safety margin around robot in meters
+          default: 0.5

@@ -1,0 +1,309 @@
+# Isaac ROS VSLAM Camera Configuration
+# Camera parameters specifically optimized for Visual SLAM applications
+
+vslam_camera_config:
+  # Stereo Camera Pair Configuration (for RGB-D SLAM)
+  stereo_camera:
+    enable_stereo: false  # Enable stereo processing for depth-based SLAM
+    left_camera_name: "rgb_camera"
+    right_camera_name: "depth_camera"  # For RGB-D, depth is treated as "right" camera
+
+    # Relative pose between cameras (extrinsics)
+    rotation:
+      rows: 3
+      cols: 3
+      data: [1.0, 0.0, 0.0,    # Identity rotation matrix
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0]
+
+    translation:
+      rows: 3
+      cols: 1
+      data: [0.0, 0.0, 0.0]    # Translation vector [x, y, z] in meters
+
+    # Stereo rectification parameters
+    stereo_rectification:
+      left_rectification_matrix:
+        rows: 3
+        cols: 3
+        data: [1.0, 0.0, 0.0,
+              0.0, 1.0, 0.0,
+              0.0, 0.0, 1.0]
+      right_rectification_matrix:
+        rows: 3
+        cols: 3
+        data: [1.0, 0.0, 0.0,
+              0.0, 1.0, 0.0,
+              0.0, 0.0, 1.0]
+      left_projection_matrix:
+        rows: 3
+        cols: 4
+        data: [320.0, 0.0, 320.0, 0.0,
+              0.0, 320.0, 240.0, 0.0,
+              0.0, 0.0, 1.0, 0.0]
+      right_projection_matrix:
+        rows: 3
+        cols: 4
+        data: [320.0, 0.0, 320.0, -320.0,  # Tx = -fx * baseline
+              0.0, 320.0, 240.0, 0.0,
+              0.0, 0.0, 1.0, 0.0]
+
+  # RGB Camera Parameters (Primary camera for feature tracking)
+  rgb_camera:
+    camera_name: "rgb_camera"
+    camera_model: "pinhole"  # Camera model: pinhole, fisheye, omnidirectional
+    image_width: 640  # Image width in pixels
+    image_height: 480  # Image height in pixels
+
+    # Intrinsic parameters optimized for VSLAM
+    intrinsic_matrix:
+      rows: 3
+      cols: 3
+      data: [320.0, 0.0, 320.0,    # [fx, 0, cx]
+            0.0, 320.0, 240.0,     # [0, fy, cy]
+            0.0, 0.0, 1.0]         # [0, 0, 1]
+
+    # Projection matrix (for rectified images)
+    projection_matrix:
+      rows: 3
+      cols: 4
+      data: [320.0, 0.0, 320.0, 0.0,    # [fx, 0, cx, Tx]
+            0.0, 320.0, 240.0, 0.0,     # [0, fy, cy, Ty]
+            0.0, 0.0, 1.0, 0.0]         # [0, 0, 1, Tz]
+
+    # Rectification matrix (identity for pinhole model)
+    rectification_matrix:
+      rows: 3
+      cols: 3
+      data: [1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0]
+
+    # Distortion parameters optimized for VSLAM (minimal distortion preferred)
+    distortion_model: "plumb_bob"  # Distortion model: plumb_bob, rational_polynomial
+    distortion_coefficients:
+      rows: 1
+      cols: 5
+      data: [-0.05, 0.01, 0.0001, -0.0001, 0.0]  # [k1, k2, p1, p2, k3]
+      # Note: Minimal distortion coefficients for VSLAM performance
+
+    # Additional distortion coefficients for rational_polynomial model
+    distortion_coefficients_rational:
+      rows: 1
+      cols: 8
+      data: [-0.05, 0.01, 0.0001, -0.0001, 0.0, 0.0, 0.0, 0.0]  # [k1, k2, p1, p2, k3, k4, k5, k6]
+
+    # Camera frame
+    camera_frame_id: "camera_rgb_optical_frame"
+    baseline: 0.0  # Baseline for stereo (meters)
+
+    # Calibration information
+    calibration_time: "2025-01-01T00:00:00Z"
+    calibration_process: "Isaac Sim automatic calibration optimized for VSLAM"
+    calibration_tool: "Isaac Sim Calibration Tool"
+    calibration_version: "1.0.0"
+
+  # Depth Camera Parameters (for RGB-D SLAM)
+  depth_camera:
+    camera_name: "depth_camera"
+    camera_model: "pinhole"
+    image_width: 640  # Image width in pixels
+    image_height: 480  # Image height in pixels
+
+    # Intrinsic parameters (should match RGB camera for alignment)
+    intrinsic_matrix:
+      rows: 3
+      cols: 3
+      data: [320.0, 0.0, 320.0,    # [fx, 0, cx]
+            0.0, 320.0, 240.0,     # [0, fy, cy]
+            0.0, 0.0, 1.0]         # [0, 0, 1]
+
+    # Projection matrix
+    projection_matrix:
+      rows: 3
+      cols: 4
+      data: [320.0, 0.0, 320.0, 0.0,
+            0.0, 320.0, 240.0, 0.0,
+            0.0, 0.0, 1.0, 0.0]
+
+    # Rectification matrix
+    rectification_matrix:
+      rows: 3
+      cols: 3
+      data: [1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0]
+
+    # Distortion parameters (typically minimal for depth cameras)
+    distortion_model: "plumb_bob"
+    distortion_coefficients:
+      rows: 1
+      cols: 5
+      data: [0.0, 0.0, 0.0, 0.0, 0.0]  # Usually minimal distortion for depth cameras
+
+    # Camera frame
+    camera_frame_id: "camera_depth_optical_frame"
+    baseline: 0.0  # Baseline for stereo (meters)
+
+    # Calibration information
+    calibration_time: "2025-01-01T00:00:00Z"
+    calibration_process: "Isaac Sim automatic calibration"
+    calibration_tool: "Isaac Sim Calibration Tool"
+    calibration_version: "1.0.0"
+
+  # VSLAM-specific Camera Optimization Parameters
+  vslam_optimization:
+    # Feature density optimization
+    feature_density_target: 800  # Target number of features per frame
+    feature_distribution: "uniform"  # uniform, central, edge_aware
+    min_feature_distance: 15.0  # Minimum distance between features (pixels)
+    max_feature_tracking_error: 2.0  # Maximum tracking error (pixels)
+
+    # Image quality requirements for VSLAM
+    min_brightness: 50  # Minimum brightness value (0-255)
+    max_brightness: 200  # Maximum brightness value (0-255)
+    min_contrast: 0.1  # Minimum contrast ratio
+    max_motion_blur: 0.1  # Maximum acceptable motion blur ratio
+
+    # Exposure settings for consistent feature detection
+    exposure_mode: "auto"  # auto, manual, aperture_priority, shutter_priority
+    target_brightness: 128  # Target brightness for auto exposure
+    exposure_compensation: 0.0  # Exposure compensation (-2.0 to 2.0)
+    auto_exposure_time_range: [0.001, 0.033]  # Range for auto exposure (seconds) - 30-1000 FPS
+    gain: 1.0  # Camera gain
+    auto_gain_range: [0.5, 2.0]  # Range for auto gain
+
+    # Focus settings for sharp feature detection
+    focus_mode: "auto"  # auto, manual, macro
+    focus_distance: 1.0  # Focus distance in meters (for manual mode)
+    enable_autofocus: true  # Enable autofocus for VSLAM
+
+  # Camera Mount Parameters for VSLAM
+  mount_parameters:
+    camera_mount_height: 0.8  # Height of camera mount above ground (meters)
+    camera_mount_angle: -0.1745  # Tilt angle of camera in radians (~-10 degrees, looking slightly forward)
+    camera_horizontal_fov: 60.0  # Horizontal field of view (degrees)
+    camera_vertical_fov: 45.0    # Vertical field of view (degrees)
+
+    # Mount position relative to robot base
+    mount_position:
+      x: 0.1    # Forward offset from base (meters)
+      y: 0.0    # Lateral offset from base (meters)
+      z: 0.8    # Vertical offset from base (meters)
+
+    # Mount orientation relative to robot base
+    mount_orientation:
+      roll: 0.0   # Roll angle (radians)
+      pitch: -0.1745  # Pitch angle (radians) (~-10 degrees)
+      yaw: 0.0    # Yaw angle (radians)
+
+  # Camera Performance Parameters for VSLAM
+  performance_parameters:
+    # Image quality settings optimized for feature detection
+    brightness: 0.0  # Brightness adjustment (-1.0 to 1.0)
+    contrast: 1.2    # Contrast adjustment (0.0 to 2.0) - Enhanced for VSLAM
+    saturation: 1.0  # Saturation adjustment (0.0 to 2.0)
+    sharpness: 1.5   # Sharpness adjustment (0.0 to 2.0) - Enhanced for feature detection
+
+    # Noise parameters for robust feature tracking
+    noise_model: "gaussian"  # Noise model: gaussian, poisson, salt_pepper
+    noise_std_dev: 0.005      # Standard deviation of noise (reduced for VSLAM)
+    noise_mean: 0.0          # Mean of noise distribution
+
+    # Temporal consistency settings
+    temporal_filter_strength: 0.1  # Strength of temporal filtering (0.0-1.0)
+    enable_temporal_filtering: true  # Enable temporal consistency
+
+  # Calibration Validation for VSLAM
+  validation_parameters:
+    reprojection_error_threshold: 0.5  # Lower threshold for VSLAM (pixels)
+    calibration_samples: 100            # More samples for VSLAM accuracy
+    calibration_accuracy: "high"       # High accuracy required for VSLAM
+    validation_metrics:
+      mean_reprojection_error: 0.3     # Target mean reprojection error (pixels)
+      max_reprojection_error: 0.6      # Target maximum reprojection error (pixels)
+      calibration_score: 0.98          # High calibration quality score (0.0-1.0)
+
+  # Isaac Sim Specific Parameters for VSLAM
+  isaac_sim_parameters:
+    # Camera properties in Isaac Sim optimized for VSLAM
+    isaac_sim_camera_properties:
+      focal_length: 0.02  # Focal length in meters
+      horizontal_aperture: 0.036  # Horizontal aperture in meters
+      vertical_aperture: 0.024    # Vertical aperture in meters
+      focus_distance: 1.0         # Focus distance in meters
+      f_stop: 1.4                 # Aperture size
+      shutter_speed: 0.0333       # Shutter speed in seconds (30 FPS)
+      sensitivity: 100            # ISO sensitivity
+      enable_denoising: true      # Enable path tracing denoising
+      max_surface_bounces: 4      # Maximum surface bounces for lighting
+      enable_motion_blur: false   # Disable motion blur for sharp features
+      enable_fxaa: true           # Enable fast approximate anti-aliasing
+      render_mode: "raytraced"    # Rendering mode: raytraced, rasterized
+
+    # Render settings optimized for VSLAM
+    render_settings:
+      enable_denoising: true      # Enable path tracing denoising
+      max_surface_bounces: 4      # Maximum surface bounces for lighting
+      enable_motion_blur: false   # Disable motion blur for feature tracking
+      enable_fxaa: true           # Enable fast approximate anti-aliasing
+      render_mode: "raytraced"    # Rendering mode: raytraced, rasterized
+      enable_lights: true         # Enable lighting
+      enable_fog: false           # Disable fog for better feature visibility
+
+  # Feature Detection Optimization
+  feature_detection_config:
+    # Harris corner detector parameters
+    harris_k: 0.04  # Harris detector parameter
+    harris_threshold: 0.00001  # Harris corner threshold
+    harris_block_size: 7  # Block size for Harris detector
+    harris_ksize: 3  # Aperture parameter for Harris detector
+
+    # Shi-Tomasi corner detector parameters
+    shi_tomasi_quality_level: 0.01  # Quality level for Shi-Tomasi
+    shi_tomasi_min_distance: 10.0  # Minimum distance for Shi-Tomasi
+    shi_tomasi_block_size: 7  # Block size for Shi-Tomasi
+
+    # FAST corner detector parameters
+    fast_threshold: 10  # Threshold for FAST detector
+    fast_nonmax_suppression: true  # Enable non-max suppression for FAST
+    fast_type: 2  # Type of FAST detector (9, 10, 12)
+
+    # ORB feature detector parameters
+    orb_nfeatures: 1000  # Number of ORB features to detect
+    orb_scale_factor: 1.2  # Scale factor for ORB pyramid
+    orb_nlevels: 8  # Number of levels in ORB pyramid
+    orb_edge_threshold: 19  # Edge threshold for ORB
+    orb_patch_size: 31  # Patch size for ORB
+    orb_fast_threshold: 20  # FAST threshold for ORB
+
+  # ROS topic configuration for VSLAM
+  ros_topics:
+    rgb_image_topic: "camera/rgb/image_rect_color"
+    rgb_camera_info_topic: "camera/rgb/camera_info"
+    depth_image_topic: "camera/depth/image_rect_raw"
+    depth_camera_info_topic: "camera/depth/camera_info"
+    rectified_image_topic: "camera/rgb/image_rect_color"
+    rectified_depth_topic: "camera/depth/image_rect_raw"
+    processed_features_topic: "visual_slam/features"
+    feature_matches_topic: "visual_slam/matches"
+
+  # Camera synchronization settings
+  synchronization_config:
+    enable_timestamp_synchronization: true  # Enable timestamp synchronization
+    timestamp_tolerance: 0.01  # Tolerance for timestamp synchronization (seconds)
+    enable_exposure_synchronization: false  # Enable exposure synchronization
+    max_exposure_difference: 0.001  # Maximum exposure difference for sync (seconds)
+
+# ROS 2 node configuration
+ros_config:
+  node_name: "isaac_ros_vslam_camera"
+  namespace: "humanoid_robot"
+  use_sim_time: true  # Use simulation time in Isaac Sim environment
+  qos_overrides:
+    /parameter_events:
+      publisher:
+        history: "keep_last"
+        depth: 1000
+        reliability: "reliable"
+        durability: "volatile"

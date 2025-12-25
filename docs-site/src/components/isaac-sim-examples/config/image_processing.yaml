@@ -1,0 +1,203 @@
+# Isaac ROS Image Processing Configuration
+# Configuration for image rectification, preprocessing, and enhancement nodes
+
+image_processing:
+  # Image rectification parameters
+  rectification_config:
+    enable_rectification: true  # Enable image rectification
+    output_width: 640  # Output image width (pixels)
+    output_height: 480  # Output image height (pixels)
+    scale_to_fit_image: true  # Scale image to fit output dimensions
+    interpolation_method: "bilinear"  # Interpolation method: bilinear, bicubic, nearest_neighbor
+    enable_undistortion: true  # Enable distortion correction
+    undistortion_iterations: 1  # Number of undistortion iterations
+    rectification_alpha: 0.0  # Alpha value for rectification (0.0 = valid pixels only, 1.0 = full image)
+
+  # Color processing parameters
+  color_processing:
+    enable_color_conversion: true  # Enable color space conversion
+    input_encoding: "bgr8"  # Input image encoding
+    output_encoding: "rgb8"  # Output image encoding
+    enable_color_balance: false  # Enable automatic color balancing
+    enable_gamma_correction: false  # Enable gamma correction
+    gamma_value: 1.0  # Gamma correction value (1.0 = no correction)
+    enable_brightness_contrast: false  # Enable brightness/contrast adjustment
+    brightness_factor: 1.0  # Brightness adjustment factor
+    contrast_factor: 1.0  # Contrast adjustment factor
+
+  # Image enhancement parameters
+  enhancement_config:
+    enable_sharpening: true  # Enable image sharpening
+    sharpening_factor: 1.2  # Sharpening factor (1.0 = no sharpening)
+    enable_denoising: true  # Enable image denoising
+    denoising_method: "bilateral"  # Denoising method: bilateral, gaussian, median
+    bilateral_filter_diameter: 5  # Bilateral filter diameter
+    bilateral_sigma_color: 75  # Bilateral filter color sigma
+    bilateral_sigma_space: 75  # Bilateral filter space sigma
+    gaussian_kernel_size: 3  # Gaussian kernel size
+    gaussian_sigma: 1.0  # Gaussian sigma value
+    median_filter_size: 3  # Median filter kernel size
+
+  # Resolution management
+  resolution_config:
+    enable_scaling: true  # Enable image scaling
+    scaling_method: "fast"  # Scaling method: fast, high_quality
+    aspect_ratio_preservation: true  # Preserve aspect ratio during scaling
+    enable_subpixel_sampling: false  # Enable subpixel sampling
+    subsampling_factor: 2  # Subsampling factor (for downsampling)
+    max_output_resolution: [1920, 1080]  # Maximum output resolution [width, height]
+
+  # Image quality parameters
+  quality_config:
+    jpeg_quality: 95  # JPEG compression quality (0-100)
+    png_compression: 1  # PNG compression level (0-9, 0 = no compression)
+    enable_compression: false  # Enable image compression
+    compression_format: "jpeg"  # Compression format: jpeg, png, webp
+    enable_quality_adaptation: false  # Enable adaptive quality based on bandwidth
+    target_bandwidth: 100.0  # Target bandwidth (MB/s) for adaptive quality
+
+  # Distortion model parameters
+  distortion_config:
+    distortion_model: "plumb_bob"  # Distortion model: plumb_bob, rational_polynomial, fisheye
+    k1: -0.17027  # Radial distortion coefficient
+    k2: 0.0266  # Radial distortion coefficient
+    p1: 0.00036  # Tangential distortion coefficient
+    p2: -0.0001  # Tangential distortion coefficient
+    k3: -0.0025  # Radial distortion coefficient (3rd order)
+    k4: 0.0  # Radial distortion coefficient (4th order)
+    k5: 0.0  # Radial distortion coefficient (5th order)
+    k6: 0.0  # Radial distortion coefficient (6th order)
+
+  # Camera calibration parameters
+  calibration_config:
+    fx: 320.0  # Focal length x (pixels)
+    fy: 320.0  # Focal length y (pixels)
+    cx: 320.0  # Principal point x (pixels)
+    cy: 240.0  # Principal point y (pixels)
+    image_width: 640  # Original image width (pixels)
+    image_height: 480  # Original image height (pixels)
+    distortion_coefficients: [-0.17027, 0.0266, 0.00036, -0.0001, -0.0025]  # Distortion coefficients
+
+  # Performance optimization
+  performance_config:
+    enable_multithreading: true  # Enable multithreading for image processing
+    thread_pool_size: 4  # Number of threads in pool
+    enable_gpu_processing: true  # Enable GPU processing where available
+    gpu_device_id: 0  # GPU device ID for processing
+    max_processing_rate: 60.0  # Maximum processing rate (Hz)
+    enable_async_processing: true  # Enable asynchronous processing
+    async_queue_size: 10  # Size of async processing queue
+    enable_batch_processing: false  # Enable batch processing of images
+    batch_size: 1  # Batch size for processing
+
+  # Quality of service settings
+  qos_config:
+    input_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    output_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    camera_qos:
+      history: "keep_last"
+      depth: 10
+      reliability: "best_effort"
+      durability: "volatile"
+
+  # Memory management
+  memory_config:
+    enable_memory_pool: true  # Enable memory pooling
+    memory_pool_size: 1048576  # Memory pool size (bytes)
+    enable_pinned_memory: true  # Enable pinned memory for transfers
+    max_memory_usage: 536870912  # Maximum memory usage (bytes)
+    enable_memory_caching: true  # Enable memory caching
+    cache_size: 10  # Number of cached images
+
+  # Image filtering parameters
+  filtering_config:
+    enable_edge_detection: false  # Enable edge detection
+    edge_detection_method: "canny"  # Edge detection method: canny, sobel, laplacian
+    canny_low_threshold: 50  # Canny low threshold
+    canny_high_threshold: 150  # Canny high threshold
+    sobel_kernel_size: 3  # Sobel kernel size
+    enable_morphological_operations: false  # Enable morphological operations
+    morphological_operation: "none"  # Operation: none, erosion, dilation, opening, closing
+    morphological_kernel_size: 3  # Morphological kernel size
+
+  # Debug and monitoring
+  debug_config:
+    enable_debug_output: false  # Enable debug output
+    debug_output_path: "/tmp/image_processing_debug"  # Debug output path
+    log_level: "INFO"  # Logging level: DEBUG, INFO, WARN, ERROR
+    enable_visualization: false  # Enable processing result visualization
+    visualization_topic: "image_processing/visualization"  # Visualization topic
+    enable_profiling: false  # Enable performance profiling
+    profile_output_path: "/tmp/image_processing_profile"  # Profile output path
+    profile_interval: 1.0  # Profile interval (seconds)
+
+  # Hardware acceleration settings
+  hardware_config:
+    use_cuda: true  # Use CUDA for acceleration
+    use_tensorrt: true  # Use TensorRT for acceleration
+    tensorrt_precision_mode: 1  # 0: FP32, 1: FP16, 2: INT8
+    use_opencv_optimization: true  # Use OpenCV optimizations
+    enable_simd: true  # Enable SIMD optimizations
+    use_opencl: false  # Use OpenCL for acceleration
+
+  # Image preprocessing for neural networks
+  neural_network_config:
+    enable_preprocessing: true  # Enable preprocessing for neural networks
+    normalization_method: "mean_std"  # Normalization: none, mean_std, min_max
+    mean_values: [0.485, 0.456, 0.406]  # Mean values for normalization (RGB)
+    std_values: [0.229, 0.224, 0.225]  # Std values for normalization (RGB)
+    min_values: [0.0, 0.0, 0.0]  # Min values for min-max normalization
+    max_values: [255.0, 255.0, 255.0]  # Max values for min-max normalization
+    input_scale: 1.0  # Input scaling factor
+    input_offset: 0.0  # Input offset value
+    output_scale: 1.0  # Output scaling factor
+    output_offset: 0.0  # Output offset value
+
+  # Format conversion parameters
+  format_config:
+    enable_format_conversion: true  # Enable format conversion
+    input_format: "auto"  # Input format: auto, rgb8, bgr8, rgba8, bgra8, gray8
+    output_format: "rgb8"  # Output format: rgb8, bgr8, rgba8, bgra8, gray8
+    enable_format_validation: true  # Enable format validation
+    supported_formats: ["rgb8", "bgr8", "rgba8", "bgra8", "gray8"]  # Supported formats
+
+  # Error handling and recovery
+  error_handling:
+    enable_error_recovery: true  # Enable automatic error recovery
+    max_retries: 3  # Maximum retry attempts
+    retry_delay: 0.1  # Delay between retries (seconds)
+    fallback_behavior: "pass_through"  # Fallback behavior on error
+    enable_sensor_monitoring: true  # Enable sensor status monitoring
+    sensor_timeout: 1.0  # Timeout for sensor data (seconds)
+
+# ROS 2 node configuration
+ros_config:
+  node_name: "isaac_ros_image_processing"
+  namespace: "humanoid_robot"
+  use_sim_time: true  # Use simulation time in Isaac Sim environment
+  qos_overrides:
+    /parameter_events:
+      publisher:
+        history: "keep_last"
+        depth: 1000
+        reliability: "reliable"
+        durability: "volatile"
+  remappings:
+    - from: "image_raw"
+      to: "camera/rgb/image_raw"
+    - from: "camera_info"
+      to: "camera/rgb/camera_info"
+    - from: "image_rect"
+      to: "camera/rgb/image_rect_color"
+    - from: "image_processed"
+      to: "camera/rgb/image_processed"
+    - from: "camera_info_rect"
+      to: "camera/rgb/camera_info_rect"

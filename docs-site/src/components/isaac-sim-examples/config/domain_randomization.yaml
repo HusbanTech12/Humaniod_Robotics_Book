@@ -1,0 +1,252 @@
+# Domain Randomization Configuration for Isaac Sim
+# Configuration for sim-to-real transfer using domain randomization techniques
+
+# General Domain Randomization Configuration
+general:
+  enable: true                    # Enable domain randomization
+  randomization_step: 1000        # How often to randomize (in training steps)
+  curriculum_learning: true       # Enable curriculum learning for domain randomization
+  initial_randomization_strength: 0.2  # Initial strength of randomization (0.0 to 1.0)
+  max_randomization_strength: 0.8      # Maximum strength of randomization (0.0 to 1.0)
+
+# Visual Domain Randomization
+visual:
+  # Lighting randomization
+  lighting:
+    enable: true
+    randomize_ambient_light: true
+    randomize_directional_light: true
+    ambient_light_range: [0.1, 0.5]    # Range for ambient light intensity
+    directional_light_intensity_range: [0.5, 2.0]  # Range for directional light intensity
+    directional_light_color_range: [0.8, 1.2]      # Range for light color variation
+    light_position_variation: 0.5       # Maximum variation in light position (meters)
+
+  # Texture randomization
+  textures:
+    enable: true
+    randomize_material_roughness: true
+    randomize_material_metallic: true
+    randomize_material_specular: true
+    roughness_range: [0.1, 0.9]         # Range for material roughness
+    metallic_range: [0.0, 0.5]          # Range for material metallic property
+    specular_range: [0.0, 1.0]          # Range for material specular property
+
+  # Color randomization
+  colors:
+    enable: true
+    randomize_robot_color: false         # Don't randomize robot color for consistency
+    randomize_floor_color: true
+    randomize_obstacle_colors: true
+    color_variation_range: [0.7, 1.3]   # Range for color variation (multiplier)
+
+  # Camera noise and distortion
+  camera:
+    enable: true
+    add_noise: true
+    noise_mean: 0.0
+    noise_std: 0.01
+    randomize_distortion: true
+    distortion_range: [0.0, 0.1]        # Range for distortion parameters
+
+# Physical Domain Randomization
+physical:
+  # Robot dynamics randomization
+  robot_dynamics:
+    enable: true
+    randomize_mass: true
+    randomize_com: true
+    randomize_friction: true
+    randomize_damping: true
+    randomize_stiffness: true
+    mass_range: [0.8, 1.2]              # Range for mass multipliers
+    com_range: [-0.01, 0.01]            # Range for center of mass variation (meters)
+    friction_range: [0.5, 1.5]          # Range for friction multipliers
+    damping_range: [0.8, 1.2]           # Range for damping multipliers
+    stiffness_range: [0.8, 1.2]         # Range for stiffness multipliers
+
+  # Actuator randomization
+  actuators:
+    enable: true
+    randomize_gains: true
+    randomize_latency: true
+    randomize_bandwidth: true
+    position_gain_range: [0.8, 1.2]     # Range for position controller gains
+    velocity_gain_range: [0.8, 1.2]     # Range for velocity controller gains
+    latency_range: [0.0, 0.02]          # Range for actuator latency (seconds)
+    bandwidth_range: [0.5, 1.5]         # Range for actuator bandwidth multipliers
+
+  # Sensor randomization
+  sensors:
+    enable: true
+    randomize_imu_noise: true
+    randomize_camera_intrinsics: true
+    randomize_lidar_noise: true
+    imu_noise_range: [0.5, 2.0]         # Range for IMU noise multipliers
+    camera_intrinsics_range: [0.95, 1.05]  # Range for camera intrinsic parameter variation
+    lidar_noise_range: [0.8, 1.2]       # Range for LiDAR noise multipliers
+
+# Environmental Domain Randomization
+environmental:
+  # Terrain randomization
+  terrain:
+    enable: true
+    randomize_terrain_height: true
+    randomize_terrain_friction: true
+    randomize_terrain_roughness: true
+    height_variation_range: [0.0, 0.05] # Range for terrain height variation (meters)
+    friction_variation_range: [0.5, 2.0] # Range for terrain friction multipliers
+    roughness_variation_range: [0.5, 1.5] # Range for terrain roughness multipliers
+
+  # Obstacle randomization
+  obstacles:
+    enable: true
+    randomize_obstacle_positions: true
+    randomize_obstacle_sizes: true
+    randomize_obstacle_properties: true
+    position_variation_range: [-2.0, 2.0]  # Range for obstacle position variation (meters)
+    size_variation_range: [0.5, 1.5]       # Range for obstacle size multipliers
+    obstacle_count_range: [0, 10]          # Range for number of obstacles
+
+  # Gravity randomization
+  gravity:
+    enable: true
+    gravity_magnitude_range: [9.5, 10.1]  # Range for gravity magnitude (m/s^2)
+    gravity_direction_variation: [0.0, 0.1] # Range for gravity direction variation (radians)
+
+# Dynamics Randomization
+dynamics:
+  # Simulation parameters randomization
+  simulation:
+    enable: true
+    randomize_dt: false                 # Usually keep dt fixed for stability
+    randomize_substeps: false           # Usually keep substeps fixed for consistency
+    randomize_solver_iterations: true
+    solver_iterations_range: [2, 8]     # Range for solver position iterations
+
+  # Contact parameters randomization
+  contacts:
+    enable: true
+    randomize_contact_stiffness: true
+    randomize_contact_damping: true
+    randomize_contact_friction: true
+    contact_stiffness_range: [0.5e4, 2.0e4]  # Range for contact stiffness
+    contact_damping_range: [50.0, 200.0]     # Range for contact damping
+    friction_coefficient_range: [0.5, 1.5]   # Range for friction coefficient multipliers
+
+# Domain Randomization Scheduling
+scheduling:
+  # How to increase randomization over time
+  method: "linear"                     # Method for increasing randomization ('linear', 'exponential', 'step')
+  increase_rate: 0.001                 # Rate of increase per training step
+  update_frequency: 1000               # How often to update randomization strength
+  enable_adaptive: true                # Enable adaptive randomization based on sim-vs-real gap
+
+# Curriculum Learning for Domain Randomization
+curriculum:
+  # Parameters for gradually increasing domain randomization
+  enabled: true
+  initial_strength: 0.1                # Initial randomization strength
+  target_strength: 0.8                 # Target randomization strength
+  schedule_type: "linear"              # Type of schedule ('linear', 'exponential', 'sigmoid')
+  steps_to_target: 50000              # Number of steps to reach target strength
+  evaluation_frequency: 5000          # How often to evaluate sim-to-real gap
+
+# Specific Randomization Parameters
+specific_parameters:
+  # Joint properties randomization
+  joint_properties:
+    randomize_position_limits: false   # Keep position limits consistent
+    randomize_velocity_limits: true
+    randomize_effort_limits: true
+    velocity_limit_range: [0.8, 1.2]   # Range for velocity limit multipliers
+    effort_limit_range: [0.8, 1.2]     # Range for effort limit multipliers
+
+  # Control parameters randomization
+  control:
+    enable: true
+    randomize_control_dt: false         # Keep control dt consistent
+    randomize_command_delay: true
+    command_delay_range: [0.0, 0.02]   # Range for command delay (seconds)
+
+# Noise Models
+noise_models:
+  # Different noise models for various sensors
+  imu:
+    noise_density: [1.0e-4, 1.0e-4, 1.0e-4]  # Noise density (continuous-time)
+    random_walk: [1.0e-6, 1.0e-6, 1.0e-6]    # Random walk (continuous-time)
+    bias_correlation_time: 300.0               # Bias correlation time (seconds)
+    initial_bias: [0.0, 0.0, 0.0]             # Initial bias values
+
+  camera:
+    pixel_noise_range: [0.0, 2.0]      # Range for pixel noise (in pixels)
+    quantization_bits: [7, 9]          # Range for quantization bits
+    dropout_prob: [0.0, 0.01]          # Range for pixel dropout probability
+
+  lidar:
+    distance_noise_range: [0.001, 0.01] # Range for distance measurement noise
+    angular_noise_range: [0.0001, 0.001] # Range for angular measurement noise
+    intensity_noise_range: [0.01, 0.1]   # Range for intensity measurement noise
+
+# Sim-to-Real Validation Parameters
+sim_to_real_validation:
+  # Parameters to evaluate sim-to-real transfer success
+  enable_validation: true
+  validation_frequency: 10000          # How often to validate sim-to-real transfer
+  validation_episodes: 20              # Number of episodes for validation
+  success_threshold: 0.7               # Minimum success rate for good sim-to-real transfer
+  performance_drop_threshold: 0.2      # Maximum acceptable performance drop
+
+# Randomization Groups
+groups:
+  # Group randomization parameters for easier management
+  visual_group:
+    - "lighting"
+    - "textures"
+    - "colors"
+    - "camera"
+
+  physical_group:
+    - "robot_dynamics"
+    - "actuators"
+    - "sensors"
+
+  environmental_group:
+    - "terrain"
+    - "obstacles"
+    - "gravity"
+
+# Conditional Randomization
+conditional:
+  # Enable randomization based on performance or other conditions
+  enable_conditional: true
+  conditions:
+    performance_based: true            # Enable randomization based on performance
+    performance_threshold: 0.9         # Performance threshold to trigger increased randomization
+    sim_real_gap_based: true          # Enable randomization based on sim-real performance gap
+    gap_threshold: 0.15               # Threshold for sim-real performance gap
+
+# Randomization Constraints
+constraints:
+  # Constraints to ensure physical plausibility
+  physical_constraints:
+    min_mass: 0.1                     # Minimum mass allowed (kg)
+    max_mass: 10.0                    # Maximum mass allowed (kg)
+    min_friction: 0.01                # Minimum friction coefficient
+    max_friction: 10.0                # Maximum friction coefficient
+    min_damping: 0.0                  # Minimum damping
+    max_damping: 10.0                 # Maximum damping
+
+# Logging and Monitoring
+logging:
+  enable: true
+  log_randomization_params: true      # Log the randomization parameters
+  log_performance_metrics: true       # Log performance metrics
+  log_frequency: 1000                 # How often to log randomization parameters
+  save_randomization_history: true    # Save history of randomization parameters
+
+# Randomization Intervals
+intervals:
+  # How often to apply different types of randomization
+  visual_interval: 50                 # Interval for visual randomization (steps)
+  physical_interval: 100              # Interval for physical randomization (steps)
+  environmental_interval: 200         # Interval for environmental randomization (steps)

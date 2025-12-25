@@ -1,0 +1,134 @@
+# Isaac Sim Environment Configuration for Humanoid Robot
+# Configuration for Isaac Sim environment with humanoid robot
+
+environment:
+  # Scene configuration
+  scene:
+    name: "small_room"
+    usd_path: "/Isaac/Environments/Simple_Room.usd"  # Default Isaac Sim environment
+    add_ground_plane: true
+    ground_plane_size: [10.0, 10.0]  # Size in meters
+    lighting:
+      enable_global_light_sampling: true
+      enable_fog: false
+      default_light_intensity: 30000
+
+  # Robot configuration
+  robot:
+    usd_path: "docs-site/src/components/isaac-sim-examples/robot/unitree_a1.urdf"  # Path to URDF
+    position: [0.0, 0.0, 0.5]  # Initial position (x, y, z) in meters
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Initial orientation (x, y, z, w) as quaternion
+    scale: [1.0, 1.0, 1.0]  # Scale factors (x, y, z)
+    articulation:
+      enable_self_collisions: false
+      enable_gyroscopic_forces: true
+
+  # Physics configuration
+  physics:
+    gravity: [0.0, 0.0, -9.81]  # Gravity vector (m/s^2)
+    solver_type: "TGS"  # Physics solver type (TGS, PGS)
+    min_position_iteration: 1
+    max_position_iteration: 256
+    min_velocity_iteration: 1
+    max_velocity_iteration: 128
+    enable_stabilization: true
+    enable_ccd: false  # Continuous collision detection
+
+  # Simulation configuration
+  simulation:
+    dt: 0.005  # Simulation time step (seconds)
+    substeps: 1
+    render_interval: 1
+    enable_scene_query_support: true
+
+  # Rendering configuration
+  rendering:
+    resolution:
+      width: 1280
+      height: 720
+    enable_lights: true
+    enable_fog: false
+    light_intensity: 30000
+    render_mode: "raytraced"  # Options: "raytraced", "raycast", "rasterized"
+    max_surface_bounces: 8
+    max_volume_scattering_bounces: 4
+    max_diffuse_bounces: 2
+    max_refractive_bounces: 4
+
+  # Sensors configuration
+  sensors:
+    camera:
+      enable: true
+      position: [0.1, 0.0, 0.1]  # Relative to robot base
+      orientation: [0.0, 0.0, 0.0, 1.0]  # Relative to robot base
+      resolution:
+        width: 640
+        height: 480
+      fov: 60  # Field of view in degrees
+      clipping_range: [0.1, 100.0]  # Near and far clipping in meters
+      sensor_tick: 0.033  # 30 FPS (1/30 seconds)
+
+    depth_camera:
+      enable: true
+      position: [0.1, 0.0, 0.1]  # Relative to robot base
+      orientation: [0.0, 0.0, 0.0, 1.0]  # Relative to robot base
+      resolution:
+        width: 640
+        height: 480
+      fov: 60  # Field of view in degrees
+      clipping_range: [0.1, 10.0]  # Near and far clipping in meters
+      sensor_tick: 0.033  # 30 FPS (1/30 seconds)
+
+    lidar:
+      enable: true
+      position: [0.1, 0.0, 0.5]  # Relative to robot base
+      orientation: [0.0, 0.0, 0.0, 1.0]  # Relative to robot base
+      params:
+        rotation_rate: 10  # Hz
+        points_per_second: 500000
+        number_of_channels: 16
+        horizontal_resolution: 0.18  # degrees
+        vertical_resolution: 2.0  # degrees
+        scan_line_resolution: 0.25  # degrees
+        max_range: 25.0  # meters
+        min_range: 0.1  # meters
+        enable_semantics: false
+
+    imu:
+      enable: true
+      position: [0.0, 0.0, 0.0]  # Relative to robot base
+      orientation: [0.0, 0.0, 0.0, 1.0]  # Relative to robot base
+      sensor_tick: 0.01  # 100 Hz (1/100 seconds)
+      linear_acceleration_noise_variance: [0.01, 0.01, 0.01]
+      angular_velocity_noise_variance: [0.01, 0.01, 0.01]
+
+  # Randomization configuration
+  randomization:
+    enable: true
+    config_path: "docs-site/src/components/isaac-sim-examples/env_randomization_config.yaml"
+
+  # Performance optimization
+  performance:
+    enable_gpu_compute: true
+    use_fabric: true
+    enable_scene_updates: true
+    update_dt: 0.0166667  # ~60 Hz
+    max_deformable_particles: 100000
+    max_cloth_particles: 100000
+    max_cloth_transforms: 10000
+    max_cloth_thickness: 1.0
+
+  # Environment interaction
+  interaction:
+    contact_offset: 0.005
+    rest_offset: 0.0
+    gpu_max_rigid_contact_count: 524288
+    gpu_max_rigid_patch_count: 81920
+    gpu_found_lost_pairs_capacity: 1024
+    gpu_found_lost_aggregate_pairs_capacity: 1024
+    gpu_total_aggregate_pairs_capacity: 1024
+    gpu_max_soft_body_contacts: 1024
+    gpu_max_particle_contacts: 1024
+    gpu_heap_capacity: 67108864
+    gpu_temp_buffer_size: 16777216
+    gpu_max_num_partitions: 8

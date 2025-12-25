@@ -1,0 +1,215 @@
+# Isaac Sim Environment Randomization Configuration
+# Specific configuration for Isaac Sim environment randomization
+
+randomization:
+  # Enable/disable overall randomization
+  enabled: true
+
+  # Randomization scheduling
+  scheduling:
+    enabled: true
+    interval: 100  # Randomize every N simulation steps
+    gradual_increase: true  # Gradually increase randomization over time
+    max_randomization_factor: 1.0  # Maximum randomization factor (1.0 = full randomization)
+
+  # Lighting randomization
+  lighting:
+    enabled: true
+    parameters:
+      # Dome light randomization
+      dome_light:
+        intensity_range: [2000, 8000]  # Light intensity range
+        color_temperature_range: [4000, 8000]  # Color temperature in Kelvin
+        enable_hdri: false  # Enable HDRI texture randomization
+
+      # Directional light randomization
+      directional_lights:
+        intensity_range: [1000, 5000]  # Intensity range for directional lights
+        color_temperature_range: [5000, 7000]  # Color temperature range
+        position_jitter: [1.0, 1.0, 1.0]  # Position jitter in meters
+        target_jitter: [0.5, 0.5, 0.5]  # Target position jitter in meters
+        rotation_jitter: [10, 10, 10]  # Rotation jitter in degrees
+
+      # Point light randomization
+      point_lights:
+        intensity_range: [500, 2000]  # Intensity range for point lights
+        color_temperature_range: [3000, 6000]  # Color temperature range
+        position_jitter: [2.0, 2.0, 2.0]  # Position jitter in meters
+
+  # Material randomization
+  materials:
+    enabled: true
+    parameters:
+      # Base material properties
+      base_properties:
+        albedo_range: [0.1, 1.0]  # Range for base color intensity
+        roughness_range: [0.05, 0.95]  # Range for material roughness
+        metallic_range: [0.0, 1.0]  # Range for material metallic property
+        specular_range: [0.0, 1.0]  # Range for material specular property
+
+      # Texture randomization
+      textures:
+        enable_texture_randomization: true
+        texture_scale_range: [0.5, 2.0]  # Range for texture scale
+        texture_rotation_range: [0, 360]  # Range for texture rotation in degrees
+        brightness_factor_range: [0.7, 1.3]  # Range for brightness adjustment
+        contrast_factor_range: [0.8, 1.2]  # Range for contrast adjustment
+        saturation_factor_range: [0.5, 1.5]  # Range for saturation adjustment
+
+      # Normal map randomization
+      normal_maps:
+        enable_normal_map_randomization: true
+        normal_map_strength_range: [0.0, 1.0]  # Range for normal map strength
+        normal_map_scale_range: [0.5, 2.0]  # Range for normal map scale
+
+  # Geometry randomization
+  geometry:
+    enabled: true
+    parameters:
+      # Object position randomization
+      object_position:
+        position_jitter: [0.1, 0.1, 0.1]  # Position jitter in meters
+        position_distribution: "uniform"  # Distribution type: uniform, gaussian, etc.
+
+      # Object rotation randomization
+      object_rotation:
+        rotation_jitter: [5, 5, 5]  # Rotation jitter in degrees
+        rotation_distribution: "uniform"  # Distribution type: uniform, gaussian, etc.
+
+      # Object scale randomization
+      object_scale:
+        scale_range: [0.8, 1.2]  # Range for uniform scaling
+        non_uniform_scale_range: [0.9, 1.1]  # Range for non-uniform scaling
+        scale_distribution: "uniform"  # Distribution type: uniform, gaussian, etc.
+
+      # Object size randomization
+      object_size:
+        size_jitter: [0.05, 0.05, 0.05]  # Size jitter in meters for box objects
+        radius_jitter: [0.02, 0.02, 0.02]  # Radius jitter for sphere objects
+
+  # Physics randomization
+  physics:
+    enabled: true
+    parameters:
+      # Gravity randomization
+      gravity:
+        magnitude_range: [9.5, 10.0]  # Range for gravity magnitude
+        direction_jitter: [0.1, 0.1, 0.1]  # Jitter for gravity direction
+
+      # Friction randomization
+      friction:
+        static_friction_range: [0.1, 0.9]  # Range for static friction coefficient
+        dynamic_friction_range: [0.1, 0.9]  # Range for dynamic friction coefficient
+        restitution_range: [0.0, 0.3]  # Range for restitution (bounciness) coefficient
+
+      # Joint parameter randomization
+      joints:
+        damping_range: [0.005, 0.05]  # Range for joint damping
+        stiffness_range: [50.0, 150.0]  # Range for joint stiffness
+        armature_range: [0.001, 0.01]  # Range for joint armature
+        friction_range: [0.01, 0.1]  # Range for joint friction
+
+      # Mass randomization
+      mass:
+        mass_range: [0.8, 1.2]  # Range for mass scaling (multiplier)
+        center_of_mass_jitter: [0.001, 0.001, 0.001]  # Jitter for center of mass
+
+  # Sensor randomization
+  sensors:
+    enabled: true
+    parameters:
+      # Camera sensor randomization
+      cameras:
+        fov_jitter: [1, 1]  # Jitter for field of view in degrees
+        distortion_coefficient_jitter: [0.001, 0.001, 0.001, 0.001, 0.001]  # Jitter for distortion coefficients
+        sensor_offset_jitter: [0.001, 0.001, 0.001]  # Jitter for sensor position offset
+        orientation_jitter: [0.1, 0.1, 0.1]  # Jitter for sensor orientation in degrees
+
+      # LiDAR sensor randomization
+      lidar:
+        return_jitter: [0.01, 0.01]  # Jitter for LiDAR return values
+        resolution_jitter: [0.01, 0.01]  # Jitter for LiDAR resolution
+        range_jitter: [0.1, 0.1]  # Jitter for LiDAR range measurements
+
+      # IMU sensor randomization
+      imu:
+        linear_acceleration_noise: [0.001, 0.001, 0.001]  # Noise for linear acceleration
+        angular_velocity_noise: [0.001, 0.001, 0.001]  # Noise for angular velocity
+        orientation_noise: [0.001, 0.001, 0.001]  # Noise for orientation
+
+      # Force/Torque sensor randomization
+      ft_sensors:
+        force_noise: [0.1, 0.1, 0.1]  # Noise for force measurements
+        torque_noise: [0.01, 0.01, 0.01]  # Noise for torque measurements
+
+  # Environment layout randomization
+  environment:
+    enabled: true
+    parameters:
+      # Floor properties randomization
+      floor:
+        roughness_range: [0.1, 0.8]  # Range for floor roughness
+        friction_range: [0.2, 0.9]  # Range for floor friction
+        albedo_range: [0.2, 0.9]  # Range for floor color intensity
+        enable_bump_map: true  # Enable bump map randomization
+        bump_scale_range: [0.0, 0.5]  # Range for bump map scale
+
+      # Obstacle placement randomization
+      obstacles:
+        count_range: [3, 8]  # Range for number of obstacles
+        position_bounds: [-3.0, 3.0, -3.0, 3.0]  # X and Y bounds for obstacle placement
+        size_range: [0.1, 0.8]  # Range for obstacle size
+        height_range: [0.1, 1.0]  # Range for obstacle height
+
+      # Object placement randomization
+      objects:
+        count_range: [2, 6]  # Range for number of random objects
+        placement_bounds: [-2.0, 2.0, -2.0, 2.0]  # X and Y bounds for object placement
+        type_distribution: ["box", "sphere", "cylinder"]  # Distribution of object types
+        spawn_attempts: 10  # Number of attempts to find valid spawn positions
+
+  # Weather and atmospheric effects
+  atmospheric:
+    enabled: false  # Disabled by default
+    parameters:
+      fog_density_range: [0.0, 0.1]  # Range for fog density
+      fog_color_range: [0.5, 0.5, 0.5, 1.0, 1.0, 1.0]  # Range for fog color (RGB)
+      wind_force_range: [0.0, 5.0]  # Range for wind force in Newtons
+      wind_direction_jitter: [10, 10, 10]  # Jitter for wind direction in degrees
+
+  # Domain randomization strategies
+  strategies:
+    # Curriculum learning approach
+    curriculum_learning:
+      enabled: false
+      stages: 5  # Number of curriculum stages
+      increment_factor: 0.2  # How much to increase randomization per stage
+
+    # Scheduled randomization
+    scheduled_randomization:
+      enabled: true
+      schedule_type: "linear"  # Options: "linear", "exponential", "step"
+      start_step: 0  # Step to start randomization
+      end_step: 10000  # Step to reach full randomization
+
+    # Adaptive randomization
+    adaptive_randomization:
+      enabled: false  # Disabled by default
+      performance_threshold: 0.8  # Performance threshold to adjust randomization
+      adjustment_factor: 0.1  # How much to adjust randomization when threshold is crossed
+
+  # Randomization exclusion zones
+  exclusion_zones:
+    enabled: false
+    zones: []
+    # Example exclusion zone format:
+    # - center: [0.0, 0.0, 0.0]  # Center position (x, y, z)
+    #   size: [1.0, 1.0, 1.0]  # Size of exclusion zone (x, y, z)
+    #   type: "cuboid"  # Type of exclusion zone: "cuboid", "sphere"
+
+  # Randomization seed control
+  seed_control:
+    enabled: true
+    base_seed: 12345  # Base seed for randomization
+    seed_offset_per_episode: 1  # Offset added to seed each episode
+    deterministic: false  # Whether to use deterministic randomization

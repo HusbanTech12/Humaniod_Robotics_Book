@@ -1,0 +1,84 @@
+# Isaac Sim Environment Randomization Configuration
+# Configuration for domain randomization and environment variation
+
+randomization:
+  # Lighting randomization
+  lighting:
+    enabled: true
+    parameters:
+      intensity_range: [500, 2000]  # Light intensity range
+      color_temperature_range: [4000, 8000]  # Color temperature in Kelvin
+      directional_light_angle_range:
+        - [0, 360]  # Azimuth
+        - [30, 80]  # Elevation
+
+  # Material randomization
+  materials:
+    enabled: true
+    parameters:
+      albedo_variance: [0.1, 0.9]  # Range for material albedo
+      roughness_variance: [0.05, 0.95]  # Range for material roughness
+      metallic_variance: [0.0, 1.0]  # Range for material metallic property
+      normal_map_strength_range: [0.0, 1.0]  # Strength of normal maps
+
+  # Texture randomization
+  textures:
+    enabled: true
+    parameters:
+      scale_range: [0.5, 2.0]  # Scale variation for textures
+      rotation_range: [0, 360]  # Rotation variation in degrees
+      brightness_factor_range: [0.7, 1.3]  # Brightness variation
+      contrast_factor_range: [0.8, 1.2]  # Contrast variation
+
+  # Physics randomization
+  physics:
+    enabled: true
+    parameters:
+      gravity_magnitude_range: [9.5, 10.0]  # Gravity magnitude variation
+      friction_coefficient_range: [0.1, 0.9]  # Friction coefficient variation
+      restitution_coefficient_range: [0.0, 0.3]  # Bounce coefficient variation
+      joint_damping_range: [0.005, 0.05]  # Joint damping variation
+
+  # Camera randomization
+  camera:
+    enabled: true
+    parameters:
+      position_jitter: [0.01, 0.01, 0.01]  # Position jitter (meters)
+      orientation_jitter: [0.1, 0.1, 0.1]  # Orientation jitter (radians)
+      focal_length_range: [18, 55]  # Focal length range (mm equivalent)
+      sensor_width_range: [20, 36]  # Sensor width range (mm)
+      sensor_height_range: [13, 24]  # Sensor height range (mm)
+
+  # Environment layout randomization
+  layout:
+    enabled: true
+    parameters:
+      object_position_jitter: [0.1, 0.1, 0.1]  # Object position variation
+      object_rotation_jitter: [5, 5, 5]  # Object rotation variation (degrees)
+      object_scale_range: [0.8, 1.2]  # Object scale variation
+      floor_roughness_range: [0.1, 0.8]  # Floor roughness variation
+
+  # Weather effects (if supported)
+  weather:
+    enabled: false  # Disabled by default, enable if needed
+    parameters:
+      fog_density_range: [0.0, 0.1]  # Fog density range
+      rain_intensity_range: [0.0, 0.0]  # Rain intensity range (0.0 to disable)
+      wind_force_range: [0.0, 5.0]  # Wind force range (N)
+
+  # Noise injection for sim-to-real transfer
+  sensor_noise:
+    enabled: true
+    parameters:
+      rgb_noise_std: 0.01  # Standard deviation for RGB sensor noise
+      depth_noise_std: 0.02  # Standard deviation for depth sensor noise
+      imu_noise_std: 0.005  # Standard deviation for IMU noise
+      lidar_noise_std: 0.05  # Standard deviation for LIDAR noise
+
+  # Randomization scheduling
+  scheduling:
+    enabled: true
+    parameters:
+      randomization_interval: 100  # Randomize every N episodes
+      gradual_randomization: true  # Gradually increase randomization
+      max_randomization_range: 1.0  # Maximum range for gradual increase

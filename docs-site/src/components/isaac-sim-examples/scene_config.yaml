@@ -1,0 +1,200 @@
+# Isaac Sim Scene Configuration
+# Configuration for Isaac Sim scenes and environments
+
+scene:
+  # Basic scene settings
+  name: "humanoid_robot_scene"
+  usd_path: "/Isaac/Environments/Simple_Room.usd"  # Default Isaac Sim environment
+  up_axis: "Z"  # Up axis for the scene (X, Y, or Z)
+  gravity: [0.0, 0.0, -9.81]  # Gravity vector (m/s^2)
+
+  # Ground plane configuration
+  ground_plane:
+    enable: true
+    size: [10.0, 10.0]  # Size in meters [width, depth]
+    position: [0.0, 0.0, 0.0]  # Position (x, y, z)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    material:
+      albedo: [0.7, 0.7, 0.7]  # RGB values [0.0, 1.0]
+      roughness: 0.8
+      metallic: 0.0
+      specular: 0.5
+
+  # Lighting configuration
+  lighting:
+    # Primary light (dome light)
+    dome_light:
+      enable: true
+      intensity: 5000
+      color: [1.0, 1.0, 1.0]  # RGB values [0.0, 1.0]
+      temperature: 6500  # Color temperature in Kelvin
+      texture_file: ""  # Path to HDRI texture (empty for uniform color)
+      visible: false
+
+    # Directional lights
+    directional_lights:
+      - name: "main_light"
+        enable: true
+        position: [5.0, 5.0, 10.0]  # Position (x, y, z) in meters
+        target: [0.0, 0.0, 0.0]  # Target position (x, y, z)
+        intensity: 3000
+        color: [1.0, 1.0, 1.0]  # RGB values [0.0, 1.0]
+        temperature: 6000  # Color temperature in Kelvin
+        visible: true
+        cast_shadows: true
+        shadow_bias: 0.0005
+        shadow_softness: 0.5
+
+      - name: "fill_light"
+        enable: true
+        position: [-5.0, -5.0, 8.0]  # Position (x, y, z) in meters
+        target: [0.0, 0.0, 0.0]  # Target position (x, y, z)
+        intensity: 1000
+        color: [0.8, 0.9, 1.0]  # RGB values [0.0, 1.0]
+        temperature: 7000  # Color temperature in Kelvin
+        visible: true
+        cast_shadows: false
+
+  # Environment objects
+  objects:
+    # Static obstacles
+    static_obstacles:
+      - name: "table"
+        usd_path: "/Isaac/Props/Materials/marble_cube.usd"  # Example path
+        position: [2.0, 0.0, 0.4]  # Position (x, y, z) in meters
+        orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+        scale: [1.0, 0.5, 0.8]  # Scale factors (x, y, z)
+        material:
+          albedo: [0.8, 0.6, 0.4]  # RGB values [0.0, 1.0]
+          roughness: 0.3
+          metallic: 0.1
+
+      - name: "box1"
+        usd_path: "/Isaac/Props/Obstacles/Cube.yaml.usd"
+        position: [-1.5, 1.0, 0.25]  # Position (x, y, z) in meters
+        orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+        scale: [0.5, 0.5, 0.5]  # Scale factors (x, y, z)
+        material:
+          albedo: [0.4, 0.6, 0.8]  # RGB values [0.0, 1.0]
+          roughness: 0.5
+          metallic: 0.0
+
+      - name: "box2"
+        usd_path: "/Isaac/Props/Obstacles/Cube.yaml.usd"
+        position: [1.0, -2.0, 0.25]  # Position (x, y, z) in meters
+        orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+        scale: [0.5, 0.5, 0.5]  # Scale factors (x, y, z)
+        material:
+          albedo: [0.8, 0.4, 0.6]  # RGB values [0.0, 1.0]
+          roughness: 0.5
+          metallic: 0.0
+
+    # Interactive objects
+    interactive_objects:
+      - name: "movable_ball"
+        usd_path: "/Isaac/Props/Interactive/Cube.usd"  # Example path
+        position: [0.0, 2.0, 0.5]  # Position (x, y, z) in meters
+        orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+        scale: [0.2, 0.2, 0.2]  # Scale factors (x, y, z)
+        mass: 0.1  # Mass in kg
+        dynamic: true  # Whether the object is dynamic (movable)
+        material:
+          albedo: [1.0, 0.0, 0.0]  # RGB values [0.0, 1.0] (red)
+          roughness: 0.2
+          metallic: 0.8
+
+  # Environmental effects
+  effects:
+    fog:
+      enable: false
+      distance: 50.0  # Distance at which fog starts (meters)
+      color: [0.5, 0.5, 0.5]  # RGB values [0.0, 1.0]
+
+    environment_texture:
+      enable: false
+      texture_path: ""  # Path to environment texture file
+
+  # Camera configuration for scene rendering
+  camera:
+    # Primary rendering camera
+    primary_camera:
+      name: "render_camera"
+      position: [3.0, 3.0, 2.0]  # Position (x, y, z) in meters
+      target: [0.0, 0.0, 0.5]  # Target position (x, y, z)
+      resolution:
+        width: 1280
+        height: 720
+      fov: 60.0  # Field of view in degrees
+      clipping_range: [0.1, 100.0]  # Near/far clipping in meters
+      sensor_horizontal_fov: 60.0
+      focal_length: 24.0  # Focal length in mm
+      focus_distance: 10.0
+      fstop: 1.4
+
+    # Additional cameras for different views
+    additional_cameras:
+      - name: "top_down_camera"
+        position: [0.0, 0.0, 5.0]  # Position (x, y, z) in meters
+        target: [0.0, 0.0, 0.0]  # Target position (x, y, z)
+        resolution:
+          width: 640
+          height: 640
+        fov: 90.0  # Field of view in degrees
+        clipping_range: [0.1, 20.0]  # Near/far clipping in meters
+
+  # Scene bounds and constraints
+  bounds:
+    # Physical boundaries of the scene
+    boundary_type: "box"  # Options: "box", "sphere", "none"
+    boundary_size: [10.0, 10.0, 5.0]  # Size of the boundary box [x, y, z]
+    boundary_position: [0.0, 0.0, 2.5]  # Center position of the boundary
+    boundary_material:
+      albedo: [0.1, 0.1, 0.1]  # RGB values [0.0, 1.0] (dark gray)
+      roughness: 1.0
+      metallic: 0.0
+      visible: false  # Whether the boundary is visible in rendering
+
+  # Scene-specific physics settings
+  physics:
+    solver_type: "TGS"  # Physics solver type (TGS, PGS)
+    min_position_iteration: 1
+    max_position_iteration: 256
+    min_velocity_iteration: 1
+    max_velocity_iteration: 128
+    enable_stabilization: true
+    enable_ccd: false  # Continuous collision detection
+
+  # Scene-specific rendering settings
+  rendering:
+    resolution:
+      width: 1280
+      height: 720
+    enable_lights: true
+    enable_fog: false
+    light_intensity: 30000
+    render_mode: "raytraced"  # Options: "raytraced", "raycast", "rasterized"
+    max_surface_bounces: 8
+    max_volume_scattering_bounces: 4
+    max_diffuse_bounces: 2
+    max_refractive_bounces: 4
+
+# Scene randomization settings
+randomization:
+  # Randomization of object positions
+  object_position_randomization:
+    enable: false
+    position_jitter: [0.1, 0.1, 0.0]  # Maximum jitter in each axis (meters)
+    rotation_jitter: [5, 5, 5]  # Maximum rotation jitter in each axis (degrees)
+
+  # Randomization of material properties
+  material_randomization:
+    enable: false
+    albedo_range: [0.3, 1.0]  # Range for randomizing albedo values
+    roughness_range: [0.1, 0.9]  # Range for randomizing roughness values
+    metallic_range: [0.0, 0.5]  # Range for randomizing metallic values
+
+  # Randomization of lighting
+  lighting_randomization:
+    enable: false
+    intensity_range: [2000, 5000]  # Range for light intensity randomization
+    color_temperature_range: [5000, 8000]  # Range for color temperature (Kelvin)

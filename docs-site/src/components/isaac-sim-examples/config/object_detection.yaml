@@ -1,0 +1,148 @@
+# Isaac ROS Object Detection Configuration
+# Configuration for Isaac ROS object detection nodes including DetectNet and spatial detection
+
+object_detection:
+  # Model configuration
+  model_config:
+    model_name: "ssd_mobilenet_v2_coco"  # Pre-trained model for object detection
+    model_path: "/isaac_ros_assets/models/ssd_mobilenet_v2_coco/model.plan"  # Path to TensorRT engine
+    input_topic: "camera/rgb/image_rect_color"  # Input image topic
+    output_topic: "detectnet/detections"  # Output detections topic
+    confidence_threshold: 0.7  # Minimum confidence for detection
+    max_objects: 10  # Maximum number of objects to detect
+    image_input_width: 300  # Input image width for model
+    image_input_height: 300  # Input image height for model
+
+  # Detection parameters
+  detection_config:
+    input_width: 640  # Expected input image width
+    input_height: 480  # Expected input image height
+    publish_topic: "detectnet/detections"  # Topic to publish detections
+    camera_info_topic: "camera/rgb/camera_info"  # Camera info for spatial calculations
+    enable_profiling: false  # Enable performance profiling
+    tensor_rt_engine_cache_path: "/tmp/detectnet_cache"  # Cache path for TensorRT engine
+    tensor_rt_max_workspace_size: 1073741824  # 1GB max workspace for TensorRT
+    tensor_rt_precision_mode: 1  # 0: FP32, 1: FP16, 2: INT8
+
+  # Spatial detection parameters (for 3D object localization)
+  spatial_detection:
+    enable_spatial_detection: true  # Enable spatial detection features
+    input_topic: "detectnet/detections"  # Input detections topic
+    depth_image_topic: "camera/depth/image_rect_raw"  # Depth image for 3D localization
+    camera_info_topic: "camera/rgb/camera_info"  # Camera calibration info
+    max_object_points: 500  # Maximum points to use for spatial calculation
+    depth_unit: "meters"  # Unit for depth measurements
+    output_topic: "detectnet/spatial_detections"  # Output spatial detections
+    mask_image_topic: "detectnet/mask_image"  # Mask image topic
+    mask_input_topic: "detectnet/mask_input"  # Mask input topic
+
+  # Performance optimization
+  performance_config:
+    input_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    output_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    num_blocks: 2  # Number of processing blocks
+    enable_padding: true  # Enable memory padding for performance
+    input_tensor_layout: "nhwc"  # Input tensor layout: nhwc or nchw
+    output_tensor_layout: "nhwc"  # Output tensor layout: nhwc or nchw
+
+  # Hardware acceleration settings
+  hardware_config:
+    use_cuda_graph: true  # Use CUDA graphs for performance
+    use_fast_math: true  # Use fast math operations
+    use_tensorrt: true  # Enable TensorRT acceleration
+    tensorrt_engine_creation: true  # Enable TensorRT engine creation
+    force_engine_update: false  # Force engine update if true
+
+  # Post-processing parameters
+  post_processing:
+    nms_threshold: 0.5  # Non-maximum suppression threshold
+    top_k: 200  # Top-k detections to consider
+    pre_nms_top_k: 1000  # Top-k before NMS
+    bbox_scale: 1.0  # Bounding box scaling factor
+    variance_encoded_in_target: false  # Whether variance is encoded in target
+
+  # Class filtering
+  class_filtering:
+    enable_class_filter: false  # Enable class-based filtering
+    filtered_classes: []  # List of classes to filter (empty means all)
+    class_mapping_file: ""  # Path to class mapping file
+
+  # Debug and logging
+  debug_config:
+    enable_debug_output: false  # Enable debug output
+    debug_output_path: "/tmp/detectnet_debug"  # Path for debug output
+    log_level: "INFO"  # Logging level: DEBUG, INFO, WARN, ERROR
+    enable_visualization: false  # Enable detection visualization
+    visualization_topic: "detectnet/visualization"  # Visualization output topic
+
+  # Memory management
+  memory_config:
+    input_buffer_padding: 0.1  # Input buffer padding ratio
+    output_buffer_padding: 0.1  # Output buffer padding ratio
+    max_batch_size: 1  # Maximum batch size for processing
+    use_pinned_memory: true  # Use pinned memory for transfers
+
+  # Calibration and rectification
+  calibration_config:
+    enable_rectification: true  # Enable image rectification
+    rectification_method: "bilinear"  # Rectification interpolation method
+    rectification_width: 640  # Rectified image width
+    rectification_height: 480  # Rectified image height
+    rectification_scale: 1.0  # Scaling factor for rectification
+
+  # Multi-camera support (for stereo or multi-view detection)
+  multi_camera_config:
+    enable_stereo: false  # Enable stereo processing
+    left_camera_topic: "camera/rgb/left/image_rect_color"  # Left camera topic
+    right_camera_topic: "camera/rgb/right/image_rect_color"  # Right camera topic
+    disparity_topic: "stereo/disparity"  # Disparity map topic
+    stereo_baseline: 0.12  # Baseline distance between cameras (meters)
+    stereo_focal_length: 320.0  # Focal length for stereo (pixels)
+
+  # Real-time performance parameters
+  real_time_config:
+    target_fps: 30  # Target frames per second
+    max_latency: 0.1  # Maximum acceptable latency (seconds)
+    enable_frame_drop: false  # Enable frame dropping under load
+    frame_drop_threshold: 0.05  # Threshold for frame dropping (seconds)
+    processing_timeout: 0.1  # Timeout for processing (seconds)
+
+  # Integration with other Isaac ROS components
+  integration_config:
+    tf_frame_prefix: "humanoid_robot"  # TF frame prefix
+    base_frame: "base_link"  # Base frame for transforms
+    camera_frame: "camera_rgb_optical_frame"  # Camera frame for transforms
+    enable_tf_publishing: true  # Enable TF publishing for detections
+    tf_publish_rate: 30.0  # Rate to publish transforms (Hz)
+
+# ROS 2 node configuration
+ros_config:
+  node_name: "isaac_ros_detectnet"
+  namespace: "humanoid_robot"
+  use_sim_time: true  # Use simulation time in Isaac Sim environment
+  qos_overrides:
+    /parameter_events:
+      publisher:
+        history: "keep_last"
+        depth: 1000
+        reliability: "reliable"
+        durability: "volatile"
+  remappings:
+    - from: "image_input"
+      to: "camera/rgb/image_rect_color"
+    - from: "detections_output"
+      to: "detectnet/detections"
+    - from: "camera_info_input"
+      to: "camera/rgb/camera_info"
+    - from: "spatial_detections"
+      to: "detectnet/spatial_detections"
+    - from: "depth_image"
+      to: "camera/depth/image_rect_raw"

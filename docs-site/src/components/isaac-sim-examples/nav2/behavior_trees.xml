@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Behavior Trees for Humanoid Robot Navigation in Nav2 -->
+<!-- This file defines behavior trees for navigation tasks optimized for humanoid robots -->
+
+<!-- Main Navigate with Recovery and Replanning Behavior Tree -->
+<root main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <RecoveryNode name="NavigateRecovery" number_of_retries="2">
+            <PipelineSequence name="NavigateWithReplanning">
+                <RateController hz="1.0">
+                    <RecoveryNode name="ComputePathToPose" number_of_retries="1">
+                        <ComputePathToPose/>
+                        <ReactiveFailure id="GoalUpdated" />
+                    </RecoveryNode>
+                </RateController>
+                <RecoveryNode name="FollowPath" number_of_retries="1">
+                    <FollowPath />
+                    <ReactiveFailure id="GoalUpdated" />
+                </RecoveryNode>
+            </PipelineSequence>
+            <ReactiveSequence>
+                <ClearEntireCostmap name="ClearGlobalCostmap-1" service_name="global_costmap/clear_entirely_global_costmap"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-1" service_name="local_costmap/clear_entirely_local_costmap"/>
+            </ReactiveSequence>
+        </RecoveryNode>
+    </BehaviorTree>
+
+    <!-- Navigate Through Poses with Recovery -->
+    <BehaviorTree ID="NavigateThroughPoses">
+        <RecoveryNode name="NavigateThroughRecovery" number_of_retries="2">
+            <PipelineSequence name="NavigateThroughWithReplanning">
+                <RateController hz="1.0">
+                    <RecoveryNode name="ComputePathThroughPoses" number_of_retries="1">
+                        <ComputePathThroughPoses/>
+                        <ReactiveFailure id="GoalUpdated" />
+                    </RecoveryNode>
+                </RateController>
+                <RecoveryNode name="FollowPath" number_of_retries="1">
+                    <FollowPath />
+                    <ReactiveFailure id="GoalUpdated" />
+                </RecoveryNode>
+            </PipelineSequence>
+            <ReactiveSequence>
+                <ClearEntireCostmap name="ClearGlobalCostmap-2" service_name="global_costmap/clear_entirely_global_costmap"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-2" service_name="local_costmap/clear_entirely_local_costmap"/>
+            </ReactiveSequence>
+        </RecoveryNode>
+    </BehaviorTree>
+
+    <!-- Navigate To Pose with Humanoid-Specific Recovery -->
+    <BehaviorTree ID="NavigateToPoseWristCamera">
+        <RecoveryNode name="NavigateToPoseWithRecovery" number_of_retries="3">
+            <PipelineSequence name="NavigateToPoseWithReplanning">
+                <RateController hz="1.0">
+                    <RecoveryNode name="ComputePathToPoseWithTolerance" number_of_retries="1">
+                        <ComputePathToPose goal_updater_node="goal_updater" />
+                        <ReactiveFailure id="GoalUpdated" />
+                    </RecoveryNode>
+                </RateController>
+                <RecoveryNode name="FollowPathWithHumanoidRecovery" number_of_retries="1">
+                    <PipelineSequence name="FollowPathWithTolerance">
+                        <FollowPath goal_checker_id="goal_checker_path_tolerance" />
+                        <OnGoalReaching>
+                            <FollowPath goal_checker_id="goal_checker_yaw_tolerance" />
+                        </OnGoalReaching>
+                    </PipelineSequence>
+                    <ReactiveFailure id="GoalUpdated" />
+                </RecoveryNode>
+            </PipelineSequence>
+            <ReactiveSequence name="HumanoidRecovery">
+                <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" radius="0.5" />
+                <ClearEntireCostmap name="ClearGlobalCostmap-3" service_name="global_costmap/clear_entirely_global_costmap"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-3" service_name="local_costmap/clear_entirely_local_costmap"/>
+            </ReactiveSequence>
+        </RecoveryNode>
+    </BehaviorTree>
+
+    <!-- Humanoid-Specific Recovery Behavior Tree -->
+    <BehaviorTree ID="HumanoidRecoveryNode">
+        <RoundRobin name="HumanoidRecoverySelector">
+            <!-- Recovery 1: Wait for humanoid stability -->
+            <Sequence name="WaitRecovery">
+                <IsControllerFailed />
+                <Wait wait_duration="2.0" name="WaitForHumanoidStability"/>
+                <ReactiveSequence>
+                    <ClearEntireCostmap name="ClearLocalCostmap-Recovery" service_name="local_costmap/clear_entirely_local_costmap"/>
+                    <GoalCheckerSelector checkers="goal_checker_path_tolerance;goal_checker_yaw_tolerance" output_selected_goal_checker="{selected_checker}" />
+                </ReactiveSequence>
+            </Sequence>
+
+            <!-- Recovery 2: Humanoid-specific backup maneuver -->
+            <Sequence name="HumanoidBackupRecovery">
+                <IsControllerFailed />
+                <IsPathComputingFailed />
+                <BackUp backup_dist="0.2" backup_speed="0.05" name="HumanoidSafeBackup"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-Backup" service_name="local_costmap/clear_entirely_local_costmap"/>
+            </Sequence>
+
+            <!-- Recovery 3: Humanoid spin maneuver -->
+            <Sequence name="HumanoidSpinRecovery">
+                <IsControllerFailed />
+                <Spin spin_dist="0.785" name="HumanoidTurnInPlace"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-Spin" service_name="local_costmap/clear_entirely_local_costmap"/>
+            </Sequence>
+
+            <!-- Recovery 4: Assisted teleoperation for humanoid -->
+            <Sequence name="AssistedTeleopRecovery">
+                <IsControllerFailed />
+                <IsGoalReached output="goal_reached_status" />
+                <Fallback name="AssistedTeleopOrStop">
+                    <AssistedTeleop min_vel_trans="0.05" max_vel_trans="0.15" min_vel_theta="0.05" max_vel_theta="0.2" name="HumanoidAssistedTeleop"/>
+                    <Wait wait_duration="1.0" name="StopAndAssess"/>
+                </Fallback>
+            </Sequence>
+        </RoundRobin>
+    </BehaviorTree>
+
+    <!-- Perception-Integrated Navigation Behavior Tree -->
+    <BehaviorTree ID="PerceptionIntegratedNavigation">
+        <RecoveryNode name="PerceptionNavigateRecovery" number_of_retries="2">
+            <PipelineSequence name="PerceptionNavigateWithReplanning">
+                <RateController hz="1.0">
+                    <RecoveryNode name="PerceptionComputePathToPose" number_of_retries="1">
+                        <Sequence>
+                            <!-- Update perception data before path planning -->
+                            <CheckPerceptionData topic_name="/detectnet/spatial_detections" timeout="0.5" name="CheckObjectDetections"/>
+                            <ComputePathToPose planner_id="GridBased" />
+                            <ReactiveFailure id="GoalUpdated" />
+                        </Sequence>
+                    </RecoveryNode>
+                </RateController>
+                <RecoveryNode name="PerceptionFollowPath" number_of_retries="1">
+                    <Sequence>
+                        <!-- Monitor perception during path following -->
+                        <MonitorPerception topic_name="/detectnet/spatial_detections" timeout="0.1" name="MonitorObstacles"/>
+                        <FollowPath controller_id="FollowPath" />
+                        <ReactiveFailure id="GoalUpdated" />
+                    </Sequence>
+                </RecoveryNode>
+            </PipelineSequence>
+            <ReactiveSequence name="PerceptionRecovery">
+                <ClearEntireCostmap name="ClearGlobalCostmap-Perception" service_name="global_costmap/clear_entirely_global_costmap"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-Perception" service_name="local_costmap/clear_entirely_local_costmap"/>
+                <Wait wait_duration="0.5" name="PerceptionSettleTime"/>
+            </ReactiveSequence>
+        </RecoveryNode>
+    </BehaviorTree>
+
+    <!-- VSLAM-Integrated Navigation Behavior Tree -->
+    <BehaviorTree ID="VSLAMIntegratedNavigation">
+        <RecoveryNode name="VSLAMNavigateRecovery" number_of_retries="2">
+            <PipelineSequence name="VSLAMNavigateWithReplanning">
+                <RateController hz="1.0">
+                    <RecoveryNode name="VSLAMComputePathToPose" number_of_retries="1">
+                        <Sequence>
+                            <!-- Ensure VSLAM localization is stable -->
+                            <CheckLocalizationQuality min_quality="0.7" topic_name="/vslam/pose" name="CheckVSLAMQuality"/>
+                            <ComputePathToPose planner_id="GridBased" />
+                            <ReactiveFailure id="GoalUpdated" />
+                        </Sequence>
+                    </RecoveryNode>
+                </RateController>
+                <RecoveryNode name="VSLAMFollowPath" number_of_retries="1">
+                    <Sequence>
+                        <!-- Monitor VSLAM during navigation -->
+                        <MonitorLocalization topic_name="/vslam/pose" timeout="1.0" name="MonitorVSLAM"/>
+                        <FollowPath controller_id="FollowPath" />
+                        <ReactiveFailure id="GoalUpdated" />
+                    </Sequence>
+                </RecoveryNode>
+            </PipelineSequence>
+            <ReactiveSequence name="VSLAMRecovery">
+                <ReinitializeGlobalLocalization name="ReinitializeVSLAM" service_name="reinitialize_global_localization"/>
+                <ClearEntireCostmap name="ClearGlobalCostmap-VSLAM" service_name="global_costmap/clear_entirely_global_costmap"/>
+                <ClearEntireCostmap name="ClearLocalCostmap-VSLAM" service_name="local_costmap/clear_entirely_local_costmap"/>
+            </ReactiveSequence>
+        </RecoveryNode>
+    </BehaviorTree>
+
+    <!-- Multi-Modal Navigation Behavior Tree -->
+    <BehaviorTree ID="MultiModalNavigation">
+        <RecoveryNode name="MultiModalNavigateRecovery" number_of_retries="3">
+            <PipelineSequence name="MultiModalNavigateWithReplanning">
+                <RateController hz="1.0">
+                    <RecoveryNode name="MultiModalComputePath" number_of_retries="1">
+                        <Selector name="PlannerSelector">
+                            <!-- Try perception-enhanced planner first -->
+                            <Sequence name="PerceptionPlannerTry">
+                                <CheckPerceptionData topic_name="/detectnet/spatial_detections" timeout="0.2" name="CheckPerceptionForPlanning"/>
+                                <ComputePathToPose planner_id="GridBased" />
+                            </Sequence>
+                            <!-- Fallback to standard planner -->
+                            <Sequence name="StandardPlannerFallback">
+                                <AlwaysFailure name="PerceptionCheckFailed"/>
+                                <ComputePathToPose planner_id="GridBased" />
+                            </Sequence>
+                        </Selector>
+                        <ReactiveFailure id="GoalUpdated" />
+                    </RecoveryNode>
+                </RateController>
+                <RecoveryNode name="MultiModalFollowPath" number_of_retries="1">
+                    <Selector name="ControllerSelector">
+                        <!-- Select controller based on situation -->
+                        <Sequence name="DynamicController">
+                            <CheckPerceptionData topic_name="/detectnet/spatial_detections" timeout="0.1" name="CheckPerceptionForControl"/>
+                            <FollowPath controller_id="FollowPath" />
+                        </Sequence>
+                        <Sequence name="StandardController">
+                            <AlwaysFailure name="PerceptionControlFailed"/>
+                            <FollowPath controller_id="FollowPath" />
+                        </Sequence>
+                    </Selector>
+                    <ReactiveFailure id="GoalUpdated" />
+                </RecoveryNode>
+            </PipelineSequence>
+            <Fallback name="MultiModalRecovery">
+                <Sequence name="PerceptionRecovery">
+                    <CheckPerceptionData topic_name="/detectnet/spatial_detections" timeout="0.1" name="CheckPerceptionRecoveryNeed"/>
+                    <ClearEntireCostmap name="ClearGlobalCostmap-MultiModal" service_name="global_costmap/clear_entirely_global_costmap"/>
+                    <ClearEntireCostmap name="ClearLocalCostmap-MultiModal" service_name="local_costmap/clear_entirely_local_costmap"/>
+                </Sequence>
+                <Sequence name="StandardRecovery">
+                    <AlwaysFailure name="PerceptionRecoveryFailed"/>
+                    <ClearEntireCostmap name="ClearGlobalCostmap-Standard" service_name="global_costmap/clear_entirely_global_costmap"/>
+                    <ClearEntireCostmap name="ClearLocalCostmap-Standard" service_name="local_costmap/clear_entirely_local_costmap"/>
+                </Sequence>
+            </Fallback>
+        </RecoveryNode>
+    </BehaviorTree>
+
+    <!-- Emergency Stop Behavior Tree -->
+    <BehaviorTree ID="EmergencyStop">
+        <ReactiveSequence name="EmergencyStopSequence">
+            <CheckEmergencyStopCondition name="CheckEmergency" />
+            <StopRobot name="EmergencyStopAction" />
+            <Wait wait_duration="0.5" name="StopDuration" />
+            <ClearEntireCostmap name="ClearLocalEmergency" service_name="local_costmap/clear_entirely_local_costmap"/>
+        </ReactiveSequence>
+    </BehaviorTree>
+
+    <!-- Goal Updater Node -->
+    <TreeNodesModel>
+        <!-- Basic Nodes -->
+        <Action ID="ComputePathToPose">
+            <input_port name="start" type="nav2_msgs::msg::PoseStamped" default="start"/>
+            <input_port name="goal" type="nav2_msgs::msg::PoseStamped" default="goal"/>
+            <output_port name="path" type="nav2_msgs::msg::Path" default="path"/>
+        </Action>
+        <Action ID="FollowPath">
+            <input_port name="path" type="nav2_msgs::msg::Path" default="path"/>
+        </Action>
+        <Action ID="BackUp">
+            <input_port name="backup_dist" type="double" default="0.15"/>
+            <input_port name="backup_speed" type="double" default="0.05"/>
+        </Action>
+        <Action ID="Spin">
+            <input_port name="spin_dist" type="double" default="1.57"/>
+        </Action>
+        <Action ID="Wait">
+            <input_port name="wait_duration" type="double" default="1.0"/>
+        </Action>
+        <Action ID="ClearEntireCostmap">
+            <input_port name="service_name" type="string"/>
+        </Action>
+        <Action ID="StopRobot" />
+        <Action ID="AssistedTeleop">
+            <input_port name="min_vel_trans" type="double" default="0.05"/>
+            <input_port name="max_vel_trans" type="double" default="0.2"/>
+            <input_port name="min_vel_theta" type="double" default="0.05"/>
+            <input_port name="max_vel_theta" type="double" default="0.3"/>
+        </Action>
+        <Action ID="ComputePathThroughPoses">
+            <input_port name="poses" type="std::vector<geometry_msgs::msg::PoseStamped>" default="poses"/>
+            <output_port name="path" type="nav2_msgs::msg::Path" default="path"/>
+        </Action>
+        <Action ID="ReinitializeGlobalLocalization">
+            <input_port name="service_name" type="string"/>
+        </Action>
+
+        <!-- Custom Humanoid Nodes -->
+        <Condition ID="CheckPerceptionData">
+            <input_port name="topic_name" type="string"/>
+            <input_port name="timeout" type="double" default="0.5"/>
+        </Condition>
+        <Action ID="MonitorPerception">
+            <input_port name="topic_name" type="string"/>
+            <input_port name="timeout" type="double" default="0.1"/>
+        </Action>
+        <Condition ID="CheckLocalizationQuality">
+            <input_port name="topic_name" type="string"/>
+            <input_port name="min_quality" type="double" default="0.5"/>
+        </Condition>
+        <Action ID="MonitorLocalization">
+            <input_port name="topic_name" type="string"/>
+            <input_port name="timeout" type="double" default="1.0"/>
+        </Action>
+        <Action ID="RemovePassedGoals">
+            <input_port name="input_goals" type="std::vector<geometry_msgs::msg::PoseStamped>"/>
+            <input_port name="radius" type="double" default="0.5"/>
+            <output_port name="output_goals" type="std::vector<geometry_msgs::msg::PoseStamped>"/>
+        </Action>
+        <Condition ID="CheckEmergencyStopCondition" />
+        <Condition ID="IsControllerFailed" />
+        <Condition ID="IsPathComputingFailed" />
+        <Condition ID="IsGoalReached">
+            <output_port name="output" type="int"/>
+        </Condition>
+        <Action ID="GoalCheckerSelector">
+            <input_port name="checkers" type="std::string"/>
+            <output_port name="output_selected_goal_checker" type="std::string"/>
+        </Action>
+    </TreeNodesModel>
+</root>

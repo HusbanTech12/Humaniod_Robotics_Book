@@ -1,0 +1,256 @@
+# Isaac ROS Visual SLAM Configuration
+# Configuration for Isaac ROS Visual SLAM pipeline including mapping, localization, and loop closure
+
+vslam_config:
+  # Core VSLAM parameters
+  core_config:
+    enable_occupancy_map: true  # Enable occupancy grid map generation
+    enable_mapper: true  # Enable map building functionality
+    enable_localization: true  # Enable localization against existing map
+    enable_loop_closure: true  # Enable loop closure detection and correction
+    enable_ground_truth: false  # Enable ground truth comparison (for simulation)
+    enable_slam_visualization: true  # Enable visualization of SLAM process
+    enable_pointcloud_output: true  # Enable point cloud output from SLAM
+
+  # Landmark management parameters
+  landmark_config:
+    max_num_landmarks: 10000  # Maximum number of landmarks to track
+    min_num_landmarks: 100  # Minimum number of landmarks for stable tracking
+    min_tracked_landmarks: 10  # Minimum tracked landmarks for valid pose
+    min_distance_between_landmarks: 0.5  # Minimum distance between landmarks (meters)
+    max_landmark_observations: 100  # Maximum observations per landmark
+    landmark_reprojection_threshold: 2.0  # Reprojection error threshold (pixels)
+    enable_landmark_culling: true  # Enable automatic landmark culling
+    landmark_culling_threshold: 50  # Threshold for landmark culling
+
+  # Feature extraction parameters
+  feature_config:
+    max_features: 1000  # Maximum number of features to extract per frame
+    min_distance_between_features: 10.0  # Minimum distance between features (pixels)
+    quality_level: 0.01  # Quality level for feature detection
+    block_size: 7  # Block size for feature detection
+    use_harris_detector: false  # Use Harris corner detector
+    k: 0.04  # Harris detector parameter
+    enable_subpixel_refinement: true  # Enable subpixel feature refinement
+    subpixel_window_size: 5  # Window size for subpixel refinement
+    subpixel_zero_zone: -1  # Zero zone for subpixel refinement
+
+  # Feature matching parameters
+  matching_config:
+    max_num_matches: 100  # Maximum number of matches to find
+    max_ratio_threshold: 0.8  # Ratio threshold for match filtering
+    min_matches: 10  # Minimum number of matches for valid tracking
+    cross_check: true  # Enable cross check for matches
+    max_distance_threshold: 100.0  # Maximum distance threshold for matches
+    enable_outlier_rejection: true  # Enable outlier rejection
+    ransac_threshold: 3.0  # RANSAC threshold for outlier rejection
+
+  # Visual odometry parameters
+  visual_odometry_config:
+    enable_visual_odometry: true  # Enable visual odometry
+    max_num_iterations: 10  # Maximum iterations for pose optimization
+    min_trust_region_size: 1e-6  # Minimum trust region size
+    max_trust_region_size: 1e6  # Maximum trust region size
+    max_solver_time: 0.01  # Maximum solver time per iteration (seconds)
+    num_threads: 4  # Number of threads for optimization
+    enable_dogleg: false  # Enable dogleg optimization strategy
+    max_num_solver_threads: 4  # Maximum solver threads
+
+  # Loop closure parameters
+  loop_closure_config:
+    enable_loop_closure: true  # Enable loop closure detection
+    min_loop_closure_interval: 5.0  # Minimum time between loop closures (seconds)
+    min_loop_closure_distance: 2.0  # Minimum distance for loop closure (meters)
+    loop_closure_threshold: 0.5  # Loop closure similarity threshold
+    max_num_loop_closure_candidates: 10  # Maximum loop closure candidates
+    enable_pose_graph_optimization: true  # Enable pose graph optimization
+    pose_graph_optimizer_type: "ceres"  # Pose graph optimizer type
+    enable_temporal_consistency: true  # Enable temporal consistency checks
+
+  # Map management parameters
+  map_config:
+    map_resolution: 0.05  # Map resolution in meters per cell
+    map_width: 200  # Map width in cells (10m for 0.05m resolution)
+    map_height: 200  # Map height in cells (10m for 0.05m resolution)
+    map_origin_x: -10.0  # Map origin X coordinate (meters)
+    map_origin_y: -10.0  # Map origin Y coordinate (meters)
+    free_threshold: 0.2  # Probability threshold for free space
+    occupied_threshold: 0.65  # Probability threshold for occupied space
+    unknown_threshold: 0.5  # Probability threshold for unknown space
+    enable_map_publishing: true  # Enable map topic publishing
+    map_publish_rate: 1.0  # Map publishing rate (Hz)
+
+  # Camera parameters
+  camera_config:
+    image_input_width: 640  # Input image width (pixels)
+    image_input_height: 480  # Input image height (pixels)
+    calibration_resolution: 640.0  # Calibration resolution reference
+    enable_rectification: true  # Enable image rectification
+    rectification_alpha: 0.0  # Rectification alpha parameter
+    min_z: 0.1  # Minimum valid depth (meters)
+    max_z: 10.0  # Maximum valid depth (meters)
+    min_disparity: 0.1  # Minimum disparity (for stereo)
+    max_disparity: 64.0  # Maximum disparity (for stereo)
+
+  # Stereo camera parameters (if using stereo)
+  stereo_config:
+    stereo_camera: false  # Enable stereo camera mode
+    baseline: 0.12  # Stereo baseline distance (meters)
+    num_disparities: 64  # Number of disparities for stereo
+    block_size: 11  # Block size for stereo matching
+    min_disparity: 0  # Minimum disparity
+    uniqueness_ratio: 15  # Uniqueness ratio for stereo
+    speckle_window_size: 200  # Speckle window size
+    speckle_range: 2  # Speckle range
+    disp12_max_diff: 1  # Maximum difference between disparities
+
+  # IMU integration parameters
+  imu_config:
+    enable_imu_integration: true  # Enable IMU data integration
+    imu_topic: "imu/data"  # IMU topic name
+    imu_frame_id: "imu_link"  # IMU frame ID
+    enable_orientation_fusion: true  # Enable orientation fusion
+    enable_angular_velocity_fusion: true  # Enable angular velocity fusion
+    enable_linear_acceleration_fusion: true  # Enable linear acceleration fusion
+    orientation_variance: [0.01, 0.01, 0.01]  # Orientation variance
+    angular_velocity_variance: [0.01, 0.01, 0.01]  # Angular velocity variance
+    linear_acceleration_variance: [0.01, 0.01, 0.01]  # Linear acceleration variance
+
+  # Optimization parameters
+  optimization_config:
+    num_matchers: 2  # Number of matchers to use
+    enable_deterministic_outcomes: false  # Enable deterministic optimization
+    optimization_frequency: 10.0  # Optimization frequency (Hz)
+    max_num_ba_iterations: 15  # Maximum bundle adjustment iterations
+    min_num_ba_iterations: 3  # Minimum bundle adjustment iterations
+    enable_bundle_adjustment: true  # Enable bundle adjustment
+    ba_type: "local"  # Bundle adjustment type: local, global
+
+  # Tracking parameters
+  tracking_config:
+    tracking_loss_threshold: 50  # Threshold for tracking loss (features)
+    enable_relocalization: true  # Enable relocalization after tracking loss
+    relocalization_threshold: 10  # Minimum features for relocalization
+    enable_keyframe_selection: true  # Enable keyframe selection
+    keyframe_selection_threshold: 15.0  # Keyframe selection threshold
+    min_keyframe_translation: 0.2  # Minimum translation for keyframe (meters)
+    min_keyframe_rotation: 0.1  # Minimum rotation for keyframe (radians)
+
+  # Performance optimization
+  performance_config:
+    enable_multithreading: true  # Enable multithreading
+    thread_pool_size: 8  # Thread pool size
+    enable_gpu_processing: true  # Enable GPU processing where available
+    gpu_device_id: 0  # GPU device ID for processing
+    max_processing_rate: 30.0  # Maximum processing rate (Hz)
+    enable_async_processing: true  # Enable asynchronous processing
+    async_queue_size: 10  # Size of async processing queue
+    enable_batch_processing: false  # Enable batch processing
+    batch_size: 1  # Batch size for processing
+
+  # Quality of service settings
+  qos_config:
+    input_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    output_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    sensor_qos:
+      history: "keep_last"
+      depth: 10
+      reliability: "best_effort"
+      durability: "volatile"
+
+  # Memory management
+  memory_config:
+    enable_memory_pool: true  # Enable memory pooling
+    memory_pool_size: 1048576  # Memory pool size (bytes)
+    enable_pinned_memory: true  # Enable pinned memory for transfers
+    max_memory_usage: 1073741824  # Maximum memory usage (bytes)
+    enable_memory_caching: true  # Enable memory caching
+    cache_size: 20  # Number of cached frames
+
+  # Debug and monitoring
+  debug_config:
+    enable_debug_output: false  # Enable debug output
+    debug_output_path: "/tmp/vslam_debug"  # Debug output path
+    log_level: "INFO"  # Logging level: DEBUG, INFO, WARN, ERROR
+    enable_visualization: true  # Enable SLAM visualization
+    visualization_topic: "vslam/visualization"  # Visualization topic
+    enable_profiling: false  # Enable performance profiling
+    profile_output_path: "/tmp/vslam_profile"  # Profile output path
+    profile_interval: 1.0  # Profile interval (seconds)
+    enable_statistics: true  # Enable statistics collection
+    statistics_topic: "vslam/statistics"  # Statistics topic
+
+  # Visual parameters
+  visual_config:
+    min_visual_parallax_degrees: 10.0  # Minimum visual parallax (degrees)
+    max_visual_parallax_degrees: 60.0  # Maximum visual parallax (degrees)
+    enable_dynamic_object_rejection: true  # Enable dynamic object rejection
+    dynamic_object_threshold: 2.0  # Threshold for dynamic object detection
+    enable_outlier_filtering: true  # Enable outlier filtering
+    outlier_threshold: 3.0  # Outlier threshold (pixels)
+
+  # Error handling and recovery
+  error_handling:
+    enable_error_recovery: true  # Enable automatic error recovery
+    max_retries: 3  # Maximum retry attempts
+    retry_delay: 0.1  # Delay between retries (seconds)
+    fallback_behavior: "continue_with_odometry"  # Fallback behavior on error
+    sensor_timeout: 1.0  # Timeout for sensor data (seconds)
+    enable_sensor_monitoring: true  # Enable sensor status monitoring
+
+  # Coordinate frame configuration
+  frame_config:
+    map_frame: "map"  # Map frame ID
+    odom_frame: "odom"  # Odometry frame ID
+    base_frame: "base_link"  # Base frame ID
+    camera_frame: "camera_rgb_optical_frame"  # Camera frame ID
+    imu_frame: "imu_link"  # IMU frame ID
+    publish_tf: true  # Enable TF publishing
+    publish_map_odom_transform: true  # Publish map->odom transform
+    publish_tracked_map_frames: true  # Publish tracked map frames
+
+# ROS 2 node configuration
+ros_config:
+  node_name: "isaac_ros_visual_slam"
+  namespace: "humanoid_robot"
+  use_sim_time: true  # Use simulation time in Isaac Sim environment
+  qos_overrides:
+    /parameter_events:
+      publisher:
+        history: "keep_last"
+        depth: 1000
+        reliability: "reliable"
+        durability: "volatile"
+  remappings:
+    - from: "visual_slam/imu"
+      to: "imu/data"
+    - from: "visual_slam/left/camera_info"
+      to: "camera/rgb/camera_info"
+    - from: "visual_slam/left/image"
+      to: "camera/rgb/image_rect_color"
+    - from: "visual_slam/right/camera_info"
+      to: "camera/rgb/camera_info"  # For stereo
+    - from: "visual_slam/right/image"
+      to: "camera/rgb/image_rect_color"   # For stereo
+    - from: "visual_slam/tracked_map_frames"
+      to: "visual_slam/tracked_map_frames"
+    - from: "visual_slam/visual_slam_graph"
+      to: "visual_slam/visual_slam_graph"
+    - from: "visual_slam/optimized_graph"
+      to: "visual_slam/optimized_graph"
+    - from: "visual_slam/map_odom"
+      to: "visual_slam/map_odom"
+    - from: "visual_slam/landmarks"
+      to: "visual_slam/landmarks"
+    - from: "visual_slam/pointcloud"
+      to: "visual_slam/pointcloud"
+    - from: "visual_slam/occupancy_grid"
+      to: "visual_slam/occupancy_grid"

@@ -1,0 +1,380 @@
+<?xml version="1.0" ?>
+<robot name="unitree_a1">
+  <!-- Base link -->
+  <link name="base_link">
+    <inertial>
+      <mass value="3.3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.02"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.193 0.09 0.055"/>
+      </geometry>
+      <material name="light_grey">
+        <color rgba="0.7 0.7 0.7 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.193 0.09 0.055"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Front right leg -->
+  <joint name="FR_hip_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="FR_hip"/>
+    <origin xyz="0.1881 -0.04675 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.8028" upper="0.8028" effort="20" velocity="60"/>
+  </joint>
+
+  <link name="FR_hip">
+    <inertial>
+      <mass value="0.634"/>
+      <origin xyz="0 -0.00327 -0.02647" rpy="0 0 0"/>
+      <inertia ixx="0.000307082" ixy="0" ixz="0" iyy="0.00028975" iyz="0.000131417" izz="0.000158938"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="FR_thigh_joint" type="revolute">
+    <parent link="FR_hip"/>
+    <child link="FR_thigh"/>
+    <origin xyz="0 -0.08 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.0472" upper="4.1888" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="FR_thigh">
+    <inertial>
+      <mass value="1.032"/>
+      <origin xyz="0 0.018 -0.032" rpy="0 0 0"/>
+      <inertia ixx="0.005117249" ixy="0" ixz="0" iyy="0.005142752" iyz="0.001201212" izz="0.001339191"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="FR_calf_joint" type="revolute">
+    <parent link="FR_thigh"/>
+    <child link="FR_calf"/>
+    <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.6965" upper="-0.9162" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="FR_calf">
+    <inertial>
+      <mass value="0.241"/>
+      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+      <inertia ixx="0.001890977" ixy="0" ixz="0" iyy="0.001890977" iyz="0" izz="0.0001125"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Front left leg -->
+  <joint name="FL_hip_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="FL_hip"/>
+    <origin xyz="0.1881 0.04675 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.8028" upper="0.8028" effort="20" velocity="60"/>
+  </joint>
+
+  <link name="FL_hip">
+    <inertial>
+      <mass value="0.634"/>
+      <origin xyz="0 0.00327 -0.02647" rpy="0 0 0"/>
+      <inertia ixx="0.000307082" ixy="0" ixz="0" iyy="0.00028975" iyz="-0.000131417" izz="0.000158938"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="FL_thigh_joint" type="revolute">
+    <parent link="FL_hip"/>
+    <child link="FL_thigh"/>
+    <origin xyz="0 0.08 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.0472" upper="4.1888" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="FL_thigh">
+    <inertial>
+      <mass value="1.032"/>
+      <origin xyz="0 -0.018 -0.032" rpy="0 0 0"/>
+      <inertia ixx="0.005117249" ixy="0" ixz="0" iyy="0.005142752" iyz="-0.001201212" izz="0.001339191"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="FL_calf_joint" type="revolute">
+    <parent link="FL_thigh"/>
+    <child link="FL_calf"/>
+    <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.6965" upper="-0.9162" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="FL_calf">
+    <inertial>
+      <mass value="0.241"/>
+      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+      <inertia ixx="0.001890977" ixy="0" ixz="0" iyy="0.001890977" iyz="0" izz="0.0001125"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Hind right leg -->
+  <joint name="HR_hip_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="HR_hip"/>
+    <origin xyz="-0.1881 -0.04675 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.8028" upper="0.8028" effort="20" velocity="60"/>
+  </joint>
+
+  <link name="HR_hip">
+    <inertial>
+      <mass value="0.634"/>
+      <origin xyz="0 -0.00327 -0.02647" rpy="0 0 0"/>
+      <inertia ixx="0.000307082" ixy="0" ixz="0" iyy="0.00028975" iyz="0.000131417" izz="0.000158938"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="HR_thigh_joint" type="revolute">
+    <parent link="HR_hip"/>
+    <child link="HR_thigh"/>
+    <origin xyz="0 -0.08 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.0472" upper="4.1888" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="HR_thigh">
+    <inertial>
+      <mass value="1.032"/>
+      <origin xyz="0 0.018 -0.032" rpy="0 0 0"/>
+      <inertia ixx="0.005117249" ixy="0" ixz="0" iyy="0.005142752" iyz="0.001201212" izz="0.001339191"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="HR_calf_joint" type="revolute">
+    <parent link="HR_thigh"/>
+    <child link="HR_calf"/>
+    <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.6965" upper="-0.9162" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="HR_calf">
+    <inertial>
+      <mass value="0.241"/>
+      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+      <inertia ixx="0.001890977" ixy="0" ixz="0" iyy="0.001890977" iyz="0" izz="0.0001125"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Hind left leg -->
+  <joint name="HL_hip_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="HL_hip"/>
+    <origin xyz="-0.1881 0.04675 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.8028" upper="0.8028" effort="20" velocity="60"/>
+  </joint>
+
+  <link name="HL_hip">
+    <inertial>
+      <mass value="0.634"/>
+      <origin xyz="0 0.00327 -0.02647" rpy="0 0 0"/>
+      <inertia ixx="0.000307082" ixy="0" ixz="0" iyy="0.00028975" iyz="-0.000131417" izz="0.000158938"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/hip.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="HL_thigh_joint" type="revolute">
+    <parent link="HL_hip"/>
+    <child link="HL_thigh"/>
+    <origin xyz="0 0.08 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.0472" upper="4.1888" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="HL_thigh">
+    <inertial>
+      <mass value="1.032"/>
+      <origin xyz="0 -0.018 -0.032" rpy="0 0 0"/>
+      <inertia ixx="0.005117249" ixy="0" ixz="0" iyy="0.005142752" iyz="-0.001201212" izz="0.001339191"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/thigh.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="HL_calf_joint" type="revolute">
+    <parent link="HL_thigh"/>
+    <child link="HL_calf"/>
+    <origin xyz="0 0 -0.2" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.6965" upper="-0.9162" effort="55" velocity="30"/>
+  </joint>
+
+  <link name="HL_calf">
+    <inertial>
+      <mass value="0.241"/>
+      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+      <inertia ixx="0.001890977" ixy="0" ixz="0" iyy="0.001890977" iyz="0" izz="0.0001125"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/calf.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Sensors -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <!-- IMU sensor -->
+  <sensor name="imu_sensor" type="imu">
+    <always_on>true</always_on>
+    <update_rate>100</update_rate>
+    <visualize>true</visualize>
+    <topic>__default_topic__</topic>
+    <pose>0 0 0 0 0 0</pose>
+  </sensor>
+</robot>

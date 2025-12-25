@@ -1,0 +1,190 @@
+# RL Policy Training Configuration for Humanoid Robot Control
+# Configuration for Isaac Lab RL training using Isaac Sim
+
+# General Training Configuration
+general:
+  seed: 42
+  num_envs: 4096                    # Number of parallel environments
+  env_spacing: 2.5                  # Spacing between environments in the scene
+  episode_length: 500               # Length of each episode in steps
+  enable_debug_vis: false           # Enable debug visualization
+  capture_video: false              # Enable video capture during training
+  video_length: 200                 # Length of captured video in steps
+  video_interval: 2000              # Interval between video captures
+
+# Policy Configuration
+policy:
+  name: "humanoid_policy"           # Name of the policy
+  algorithm: "PPO"                  # Reinforcement learning algorithm (PPO, SAC, etc.)
+  network:
+    name: "ActorCritic"             # Network architecture
+    actor_hidden_dims: [512, 256, 128]  # Hidden dimensions for actor network
+    critic_hidden_dims: [512, 256, 128] # Hidden dimensions for critic network
+    activation: "elu"               # Activation function (elu, relu, tanh, etc.)
+    init_noise_std: 1.0             # Initial noise standard deviation for exploration
+
+# PPO Algorithm Parameters
+ppo:
+  learning_rate: 1.0e-3             # Learning rate for policy optimization
+  learning_rate_schedule: "adaptive" # Learning rate schedule (adaptive, constant)
+  clip_param: 0.2                   # Clipping parameter for PPO
+  num_learning_epochs: 5            # Number of learning epochs per update
+  num_mini_batches: 4               # Number of mini batches per epoch
+  value_loss_coef: 1.0              # Coefficient for value function loss
+  entropy_coef: 0.01                # Coefficient for entropy bonus
+  gamma: 0.99                       # Discount factor
+  lam: 0.95                         # GAE lambda
+  max_grad_norm: 1.0                # Maximum gradient norm for clipping
+
+# Training Configuration
+training:
+  max_iterations: 15000             # Maximum number of training iterations
+  save_interval: 500                # Interval for saving checkpoints
+  print_stats: true                 # Print training statistics
+  scalar_log_freq: 2                # Frequency of scalar logging
+  policy_class_name: "ActorCritic"  # Policy class name
+  adaptive_sampling: false          # Enable adaptive sampling
+  kl_threshold: 0.016               # KL divergence threshold for adaptive LR
+
+# Environment Configuration
+env:
+  num_actions: 12                   # Number of actions (12 DOF for Unitree A1)
+  num_observations: 41              # Number of observations
+  num_states: 0                     # Number of privileged observations (0 if not using privileged info)
+  frame_stack: 1                    # Number of frames to stack for temporal information
+  enable_randomization: true        # Enable domain randomization
+  randomization_params:
+    frequency: 1000                 # Frequency of domain randomization (in iterations)
+    observations: false             # Randomize observations
+    actions: false                  # Randomize actions
+    commands: true                  # Randomize commands (target velocities)
+
+# Domain Randomization Parameters
+domain_randomization:
+  enable: true                      # Enable domain randomization
+  start_randomization_at: 0         # Start randomization after this many iterations
+  frequency: 1000                   # How often to randomize (in iterations)
+  push_interval: 500                # How often to apply external pushes (in steps)
+  push_range: [20, 200]            # Range of steps for push interval
+  max_push_vel: 1.0                 # Maximum push velocity
+
+# Curriculum Learning Parameters
+curriculum:
+  enabled: true                     # Enable curriculum learning
+  initial_difficulty: 0.0           # Initial difficulty level (0.0 to 1.0)
+  difficulty_increment: 0.01        # Amount to increment difficulty
+  difficulty_threshold: 0.8         # Threshold to increment difficulty
+  eval_every: 100                   # Evaluate performance every N iterations
+
+# Reward Configuration
+rewards:
+  # Weight for each reward component
+  weights:
+    tracking_lin_vel: 1.0           # Reward for forward velocity tracking
+    tracking_ang_vel: 0.5           # Reward for angular velocity tracking
+    lin_vel_z: -2.0                 # Penalty for vertical velocity
+    ang_vel_xy: -0.05               # Penalty for body angular velocity
+    orientation: -1.0               # Penalty for non-upright orientation
+    base_height: -0.2               # Penalty for incorrect base height
+    action_rate: -10.0              # Penalty for high action rates
+    action: -0.0002                 # Penalty for large actions
+    feet_air_time: 1.0              # Reward for feet air time
+    collision: -1.0                 # Penalty for collisions
+    feet_stumble: -0.5              # Penalty for feet stumbling
+    stand_still: -0.5               # Penalty for standing still when moving is expected
+
+  # Scaling factors for reward components
+  scales:
+    termination: -100.0             # Reward for episode termination
+    tracking_lin_vel: 1.0           # Scale for linear velocity tracking
+    tracking_ang_vel: 0.5           # Scale for angular velocity tracking
+    lin_vel_z: -2.0                 # Scale for z-axis velocity penalty
+    ang_vel_xy: -0.05               # Scale for angular velocity penalty
+    orientation: -1.0               # Scale for orientation penalty
+    base_height: -0.2               # Scale for base height penalty
+    action_rate: -10.0              # Scale for action rate penalty
+    action: -0.0002                 # Scale for action penalty
+    feet_air_time: 1.0              # Scale for feet air time reward
+    collision: -1.0                 # Scale for collision penalty
+    feet_stumble: -0.5              # Scale for feet stumble penalty
+    stand_still: -0.5               # Scale for stand still penalty
+
+# Commands Configuration (Target velocities for training)
+commands:
+  ranges:
+    lin_vel_x: [-1.0, 2.0]         # Range for forward linear velocity (m/s)
+    lin_vel_y: [-0.3, 0.3]         # Range for lateral linear velocity (m/s)
+    ang_vel_yaw: [-1.0, 1.0]       # Range for angular velocity (rad/s)
+    height: [-0.1, 0.1]            # Range for height variations (m)
+
+# Normalization Parameters
+normalization:
+  class_name: "RunningMeanStd"      # Normalization class
+  update_interval: 1                # How often to update normalization stats
+  clamp_actions: true               # Clamp actions to [-1, 1]
+
+# Noise Parameters
+noise:
+  add_noise: true                   # Add noise to observations
+  noise_level: 1.0                  # Noise level (multiplier)
+  noise_scales:
+    dof_pos: 0.01                   # Noise scale for joint positions
+    dof_vel: 1.5                    # Noise scale for joint velocities
+    ang_vel: 0.1                    # Noise scale for angular velocity
+    lin_vel: 0.1                    # Noise scale for linear velocity
+    gravity: 0.05                   # Noise scale for gravity vector
+    height_measurements: 0.1        # Noise scale for height measurements
+
+# Asset Configuration
+asset:
+  asset_root: "/Isaac/Robots/Unitree/A1"  # Root path for robot asset
+  asset_file: "a1.usd"              # Robot asset file
+  default_dof_drive_mode: 4         # Default DOF drive mode (4 = velocity)
+
+# Simulation Parameters
+simulation:
+  dt: 0.0083333333                  # Simulation timestep (1/120 s)
+  substeps: 2                       # Number of simulation substeps
+  up_axis: "z"                      # Up axis for the simulation
+  use_gpu_pipeline: true            # Use GPU pipeline for simulation
+  gravity: [0.0, 0.0, -9.81]       # Gravity vector [x, y, z]
+  add_ground_plane: true            # Add ground plane to simulation
+  add_distant_light: true           # Add distant light to simulation
+  use_flatcache: true               # Use flat cache for faster loading
+  enable_scene_query_support: false # Enable scene query support
+  enable_jacobian_graph: false      # Enable jacobian graph computation
+
+# Physics Parameters
+physics:
+  solver_type: 1                    # Solver type (1 = TGS, 0 = PGS)
+  num_position_iterations: 4        # Number of position iterations
+  num_velocity_iterations: 1        # Number of velocity iterations
+  max_depenetration_velocity: 1000.0 # Maximum depenetration velocity
+  enable_stablization: true         # Enable stabilization
+  friction_offset_threshold: 0.04   # Friction offset threshold
+  friction_correlation_distance: 0.025 # Friction correlation distance
+
+# GPU Memory Parameters
+gpu:
+  gpu_max_rigid_contact_count: 524288
+  gpu_max_rigid_patch_count: 33554432
+  gpu_found_lost_pairs_capacity: 1024
+  gpu_found_lost_aggregate_pairs_capacity: 1024
+  gpu_total_aggregate_pairs_capacity: 1024
+  gpu_max_soft_body_contacts: 1024
+  gpu_max_particle_contacts: 1024
+  gpu_heap_capacity: 67108864
+  gpu_temp_buffer_capacity: 16777216
+  gpu_max_num_partitions: 8
+
+# Checkpoint and Logging
+checkpoint:
+  save_checkpoints: true            # Save checkpoints during training
+  checkpoint_path: "./checkpoints"  # Path to save checkpoints
+  load_checkpoint: false            # Load existing checkpoint
+  checkpoint_interval: 500          # Interval for saving checkpoints
+
+logging:
+  log_dir: "./logs"                 # Directory for log files
+  experiment_name: "humanoid_locomotion"  # Name of the experiment
+  writer_type: "tensorboard"        # Type of writer (tensorboard, wandb)

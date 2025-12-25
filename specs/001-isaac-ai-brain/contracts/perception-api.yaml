@@ -1,0 +1,331 @@
+openapi: 3.0.0
+info:
+  title: Isaac ROS Perception API
+  description: API for interacting with Isaac ROS perception pipelines
+  version: 1.0.0
+  contact:
+    name: Isaac ROS Team
+    url: https://nvidia-isaac-ros.github.io/
+    email: isaac-ros-bugs@nvidia.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local Isaac ROS perception service
+
+paths:
+  /perception/detect_objects:
+    post:
+      summary: Detect objects in sensor data
+      description: Process sensor data through Isaac ROS object detection pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectDetectionRequest'
+      responses:
+        '200':
+          description: Object detection results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectDetectionResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /perception/visual_slam:
+    post:
+      summary: Perform Visual SLAM
+      description: Process visual data to create map and estimate pose
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisualSLAMRequest'
+      responses:
+        '200':
+          description: SLAM results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisualSLAMResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /perception/sensor_fusion:
+    post:
+      summary: Fuse multiple sensor inputs
+      description: Combine data from multiple sensors using Isaac ROS fusion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorFusionRequest'
+      responses:
+        '200':
+          description: Fused sensor data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorFusionResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    ObjectDetectionRequest:
+      type: object
+      required:
+        - sensor_data
+        - model_config
+      properties:
+        sensor_data:
+          type: string
+          description: Base64 encoded sensor data (image, point cloud, etc.)
+          example: "iVBORw0KGgoAAAANSUhEUgAA..."
+        model_config:
+          type: string
+          description: Path to model configuration
+          example: "/models/yolo_config.yaml"
+        confidence_threshold:
+          type: number
+          description: Minimum confidence for detections
+          default: 0.5
+          minimum: 0.0
+          maximum: 1.0
+
+    ObjectDetectionResponse:
+      type: object
+      properties:
+        detections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Detection'
+        processing_time:
+          type: number
+          description: Time taken for processing in seconds
+        confidence_threshold:
+          type: number
+          description: Threshold used for filtering detections
+
+    Detection:
+      type: object
+      properties:
+        class_name:
+          type: string
+          description: Name of detected object class
+        confidence:
+          type: number
+          description: Confidence score of detection
+          minimum: 0.0
+          maximum: 1.0
+        bounding_box:
+          $ref: '#/components/schemas/BoundingBox'
+        position_3d:
+          $ref: '#/components/schemas/Position3D'
+
+    BoundingBox:
+      type: object
+      properties:
+        x_min:
+          type: number
+          description: Minimum X coordinate of bounding box
+        y_min:
+          type: number
+          description: Minimum Y coordinate of bounding box
+        x_max:
+          type: number
+          description: Maximum X coordinate of bounding box
+        y_max:
+          type: number
+          description: Maximum Y coordinate of bounding box
+
+    Position3D:
+      type: object
+      properties:
+        x:
+          type: number
+          description: X coordinate in 3D space
+        y:
+          type: number
+          description: Y coordinate in 3D space
+        z:
+          type: number
+          description: Z coordinate in 3D space
+
+    VisualSLAMRequest:
+      type: object
+      required:
+        - image_data
+        - camera_params
+      properties:
+        image_data:
+          type: array
+          items:
+            type: string
+            description: Base64 encoded image data
+          minItems: 1
+        camera_params:
+          $ref: '#/components/schemas/CameraParameters'
+        enable_loop_closure:
+          type: boolean
+          description: Whether to enable loop closure detection
+          default: true
+        map_resolution:
+          type: number
+          description: Resolution of the generated map (meters per cell)
+          default: 0.05
+
+    VisualSLAMResponse:
+      type: object
+      properties:
+        pose_estimate:
+          $ref: '#/components/schemas/Pose'
+        map:
+          type: string
+          description: Serialized map data
+        processing_time:
+          type: number
+          description: Time taken for processing in seconds
+        tracking_status:
+          type: string
+          description: Status of visual tracking (OK, LOST, INITIALIZING)
+
+    CameraParameters:
+      type: object
+      required:
+        - fx
+        - fy
+        - cx
+        - cy
+      properties:
+        fx:
+          type: number
+          description: Focal length in X direction (pixels)
+        fy:
+          type: number
+          description: Focal length in Y direction (pixels)
+        cx:
+          type: number
+          description: Principal point X coordinate (pixels)
+        cy:
+          type: number
+          description: Principal point Y coordinate (pixels)
+        width:
+          type: integer
+          description: Image width in pixels
+        height:
+          type: integer
+          description: Image height in pixels
+        distortion_coeffs:
+          type: array
+          items:
+            type: number
+          description: Distortion coefficients
+
+    Pose:
+      type: object
+      properties:
+        position:
+          $ref: '#/components/schemas/Position3D'
+        orientation:
+          $ref: '#/components/schemas/Quaternion'
+
+    Quaternion:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          type: number
+        w:
+          type: number
+
+    SensorFusionRequest:
+      type: object
+      required:
+        - sensor_inputs
+      properties:
+        sensor_inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SensorInput'
+          minItems: 2
+        fusion_config:
+          type: string
+          description: Path to fusion configuration file
+          example: "/configs/sensor_fusion_config.yaml"
+
+    SensorInput:
+      type: object
+      required:
+        - sensor_type
+        - data
+        - timestamp
+      properties:
+        sensor_type:
+          type: string
+          enum: [camera, lidar, imu, gps]
+          description: Type of sensor
+        data:
+          type: string
+          description: Base64 encoded sensor data
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of sensor data
+
+    SensorFusionResponse:
+      type: object
+      properties:
+        fused_data:
+          $ref: '#/components/schemas/FusedData'
+        confidence:
+          type: number
+          description: Confidence level of fused data
+          minimum: 0.0
+          maximum: 1.0
+        processing_time:
+          type: number
+          description: Time taken for processing in seconds
+
+    FusedData:
+      type: object
+      properties:
+        pose:
+          $ref: '#/components/schemas/Pose'
+        velocity:
+          $ref: '#/components/schemas/Velocity'
+        covariance:
+          type: array
+          items:
+            type: number
+          description: Covariance matrix for uncertainty
+
+    Velocity:
+      type: object
+      properties:
+        linear:
+          $ref: '#/components/schemas/Position3D'
+        angular:
+          type: object
+          properties:
+            x:
+              type: number
+              description: Angular velocity around X axis
+            y:
+              type: number
+              description: Angular velocity around Y axis
+            z:
+              type: number
+              description: Angular velocity around Z axis

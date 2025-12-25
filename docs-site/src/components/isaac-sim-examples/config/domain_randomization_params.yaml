@@ -1,0 +1,206 @@
+# Domain Randomization Parameters for Isaac Sim
+# Specific parameters for sim-to-real transfer domain randomization
+
+# Visual Randomization Parameters
+visual:
+  lighting:
+    # Ambient light randomization
+    ambient_light_intensity_range: [0.1, 0.5]
+    ambient_light_color_range: [0.8, 1.2]
+
+    # Directional light randomization
+    directional_light_intensity_range: [0.5, 2.0]
+    directional_light_color_range: [0.8, 1.2]
+    directional_light_position_variation: 0.5  # meters
+
+    # Shadow parameters
+    shadow_intensity_range: [0.5, 1.0]
+    shadow_bias_range: [0.0001, 0.01]
+
+  textures:
+    # Material property randomization
+    albedo_range: [0.7, 1.3]           # Color intensity
+    roughness_range: [0.1, 0.9]        # Surface roughness
+    metallic_range: [0.0, 0.5]         # Metallic property
+    specular_range: [0.0, 1.0]         # Specular reflection
+
+    # Texture variation parameters
+    texture_scale_range: [0.8, 1.2]    # Texture scaling
+    normal_map_strength_range: [0.5, 1.5]  # Normal map intensity
+
+  colors:
+    # Color variation parameters
+    hue_variation_range: [0.95, 1.05]  # Hue multiplier
+    saturation_range: [0.8, 1.2]       # Saturation multiplier
+    brightness_range: [0.8, 1.2]       # Brightness multiplier
+
+  camera:
+    # Camera sensor randomization
+    noise_mean_range: [-0.01, 0.01]
+    noise_std_range: [0.005, 0.02]
+    bias_range: [-0.1, 0.1]
+
+    # Distortion parameters
+    distortion_k1_range: [-0.1, 0.1]
+    distortion_k2_range: [-0.05, 0.05]
+    distortion_p1_range: [-0.01, 0.01]
+    distortion_p2_range: [-0.01, 0.01]
+
+    # Exposure parameters
+    exposure_time_range: [1.0e-6, 1.0e-2]  # seconds
+    gain_range: [0.8, 1.2]
+
+# Physical Randomization Parameters
+physical:
+  robot_dynamics:
+    # Mass properties
+    mass_multiplier_range: [0.8, 1.2]
+    center_of_mass_variation: [0.001, 0.01]  # meters
+
+    # Inertia properties
+    inertia_multiplier_range: [0.8, 1.2]
+    inertia_offset_range: [0.001, 0.01]
+
+  actuators:
+    # Actuator dynamics
+    gear_ratio_range: [0.95, 1.05]
+    motor_constant_range: [0.8, 1.2]
+    torque_constant_range: [0.8, 1.2]
+
+    # Control parameters
+    position_gain_range: [0.8, 1.2]
+    velocity_gain_range: [0.8, 1.2]
+    feedforward_gain_range: [0.8, 1.2]
+
+    # Latency and delay
+    control_latency_range: [0.0, 0.02]  # seconds
+    sensor_latency_range: [0.0, 0.01]   # seconds
+
+  sensors:
+    # IMU sensor parameters
+    imu_accelerometer_noise_density: [1.0e-4, 1.0e-3]  # continuous-time, m/s^2/sqrt(Hz)
+    imu_gyroscope_noise_density: [1.0e-5, 1.0e-4]      # continuous-time, rad/s/sqrt(Hz)
+    imu_accelerometer_random_walk: [1.0e-6, 1.0e-5]    # m/s^3/sqrt(Hz)
+    imu_gyroscope_random_walk: [1.0e-7, 1.0e-6]        # rad/s^2/sqrt(Hz)
+
+    # Camera sensor parameters
+    camera_pixel_noise_range: [0.1, 2.0]    # pixels
+    camera_quantization_bits_range: [7, 10] # bits
+    camera_dropout_probability_range: [0.0, 0.01]
+
+    # LiDAR sensor parameters
+    lidar_distance_noise_range: [0.001, 0.02]    # meters
+    lidar_angular_noise_range: [0.0001, 0.002]  # radians
+    lidar_intensity_noise_range: [0.01, 0.1]
+
+# Environmental Randomization Parameters
+environmental:
+  terrain:
+    # Height field parameters
+    terrain_height_variation: [0.0, 0.05]  # meters
+    terrain_friction_range: [0.5, 2.0]     # multiplier
+    terrain_restitution_range: [0.0, 0.2]  # bounciness
+
+    # Roughness parameters
+    terrain_roughness_range: [0.001, 0.01]  # meters
+
+    # Slope parameters
+    terrain_slope_range: [0.0, 0.3]  # radians (0 to ~17 degrees)
+
+  obstacles:
+    # Obstacle properties
+    obstacle_position_variation: [0.1, 2.0]  # meters
+    obstacle_size_range: [0.5, 1.5]          # multiplier
+    obstacle_friction_range: [0.5, 2.0]      # multiplier
+    obstacle_restitution_range: [0.0, 0.3]   # bounciness
+
+  gravity:
+    # Gravity variations
+    gravity_magnitude_range: [9.7, 9.9]      # m/s^2
+    gravity_direction_variation: [0.0, 0.05]  # radians
+
+# Simulation Parameters
+simulation:
+  # Numerical parameters
+  solver_position_iteration_range: [2, 8]
+  solver_velocity_iteration_range: [1, 4]
+  contact_stiffness_range: [1.0e3, 1.0e5]
+  contact_damping_range: [50.0, 200.0]
+
+  # Time step variations (if applicable)
+  dt_multiplier_range: [0.9, 1.1]
+
+# Control and Dynamics Parameters
+control:
+  # Command and control variations
+  command_delay_range: [0.0, 0.02]     # seconds
+  command_interpolation_range: [0.0, 0.05]  # smoothing factor
+  control_frequency_variation: [0.8, 1.2]   # frequency multiplier
+
+# Randomization Scheduling Parameters
+scheduling:
+  # How to apply randomization over time
+  initial_strength: 0.1          # Initial randomization strength (0.0 to 1.0)
+  target_strength: 0.8           # Target randomization strength
+  schedule_type: "linear"        # linear, exponential, sigmoid
+  steps_to_target: 50000         # Number of steps to reach target strength
+  update_frequency: 1000         # How often to update randomization strength
+
+# Constraints and Limits
+constraints:
+  # Physical constraints to maintain plausibility
+  min_mass: 0.1                  # kg
+  max_mass: 10.0                 # kg
+  min_friction: 0.01             # coefficient
+  max_friction: 10.0             # coefficient
+  min_damping: 0.0               # N*s/m
+  max_damping: 10.0              # N*s/m
+  min_stiffness: 1.0e2           # N/m
+  max_stiffness: 1.0e6           # N/m
+
+# Conditional Randomization Parameters
+conditional:
+  # Parameters for conditional randomization based on performance
+  performance_threshold: 0.85    # Performance level to trigger increased randomization
+  gap_threshold: 0.15            # Sim-real performance gap threshold
+  min_performance_for_randomization: 0.6  # Minimum performance to apply randomization
+
+# Randomization Groups
+groups:
+  # Group definitions for coordinated randomization
+  static_objects:
+    - "floor"
+    - "walls"
+    - "static_obstacles"
+
+  dynamic_objects:
+    - "movable_obstacles"
+    - "articulated_objects"
+
+  lighting:
+    - "ambient_light"
+    - "directional_light"
+    - "point_lights"
+
+# Noise Model Parameters
+noise_models:
+  # Specific noise model parameters
+  gaussian_noise:
+    mean_range: [-0.01, 0.01]
+    std_range: [0.001, 0.05]
+
+  uniform_noise:
+    range_min: -0.05
+    range_max: 0.05
+
+  pink_noise:
+    alpha_range: [0.5, 2.0]      # Noise color parameter
+    amplitude_range: [0.001, 0.01]
+
+# Validation Parameters
+validation:
+  # Parameters for validating sim-to-real transfer
+  validation_frequency: 5000     # How often to validate sim-to-real gap
+  validation_episodes: 20        # Number of episodes for validation
+  success_threshold: 0.7         # Minimum success rate for good transfer
+  performance_drop_threshold: 0.25  # Maximum acceptable performance drop

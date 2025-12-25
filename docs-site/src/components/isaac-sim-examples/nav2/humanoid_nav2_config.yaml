@@ -1,0 +1,355 @@
+# Nav2 Configuration for Humanoid Robot
+# This configuration is specifically tuned for humanoid robot navigation
+# with bipedal locomotion characteristics and dynamic stability requirements
+
+amcl:
+  ros__parameters:
+    use_sim_time: True
+    alpha1: 0.2
+    alpha2: 0.2
+    alpha3: 0.2
+    alpha4: 0.2
+    alpha5: 0.2
+    base_frame_id: "base_link"
+    beam_skip_distance: 0.5
+    beam_skip_error_threshold: 0.9
+    beam_skip_threshold: 0.3
+    do_beamskip: false
+    global_frame_id: "map"
+    lambda_short: 0.1
+    likelihood_max_dist: 2.0
+    max_beams: 60
+    max_particles: 2000
+    min_particles: 500
+    odom_frame_id: "odom"
+    pf_err: 0.05
+    pf_z: 0.99
+    recovery_alpha_fast: 0.0
+    recovery_alpha_slow: 0.0
+    resample_interval: 1
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    save_pose_rate: 0.5
+    scan_topic: "scan"
+    set_initial_pose: false
+    sigma_hit: 0.2
+    tf_broadcast: true
+    transform_tolerance: 1.0
+    update_min_a: 0.2
+    update_min_d: 0.25
+    z_hit: 0.5
+    z_max: 0.05
+    z_rand: 0.5
+    z_short: 0.05
+    always_reset_initial_pose: false
+    first_map_only: false
+
+amcl_map_client:
+  ros__parameters:
+    use_sim_time: True
+
+amcl_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+bt_navigator:
+  ros__parameters:
+    use_sim_time: True
+    global_frame: "map"
+    robot_base_frame: "base_link"
+    odom_topic: "/odom"
+    default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"
+    plugin_lib_names:
+      - "bt_navigator/navigate_to_pose_goal_checker"
+      - "bt_navigator/initial_pose_goal_checker"
+      - "nav2_compute_path_to_pose_action_bt_node"
+      - "nav2_follow_path_action_bt_node"
+      - "nav2_back_up_action_bt_node"
+      - "nav2_spin_action_bt_node"
+      - "nav2_wait_action_bt_node"
+      - "nav2_clear_costmap_service_bt_node"
+      - "nav2_is_stuck_condition_bt_node"
+      - "nav2_goal_reached_condition_bt_node"
+      - "nav2_goal_updated_condition_bt_node"
+      - "nav2_initial_pose_received_condition_bt_node"
+      - "nav2_reinitialize_global_localization_service_bt_node"
+      - "nav2_rate_controller_bt_node"
+      - "nav2_distance_controller_bt_node"
+      - "nav2_speed_controller_bt_node"
+      - "nav2_truncate_path_action_bt_node"
+      - "nav2_goal_updater_node_bt_node"
+      - "nav2_recovery_node_bt_node"
+      - "nav2_pipeline_sequence_bt_node"
+      - "nav2_round_robin_node_bt_node"
+      - "nav2_transform_available_condition_bt_node"
+      - "nav2_time_expired_condition_bt_node"
+      - "nav2_path_expiring_timer_condition"
+      - "nav2_distance_traveled_condition_bt_node"
+      - "nav2_single_trigger_bt_node"
+      - "nav2_is_battery_low_condition_bt_node"
+      - "nav2_navigate_through_poses_action_bt_node"
+      - "nav2_navigate_to_pose_action_bt_node"
+      - "nav2_remove_passed_goals_action_bt_node"
+      - "nav2_planner_selector_bt_node"
+      - "nav2_controller_selector_bt_node"
+      - "nav2_goal_checker_selector_bt_node"
+
+bt_navigator_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+controller_server:
+  ros__parameters:
+    use_sim_time: True
+    controller_frequency: 20.0
+    min_x_velocity_threshold: 0.001
+    min_y_velocity_threshold: 0.001
+    min_theta_velocity_threshold: 0.001
+    progress_checker_plugin: "progress_checker"
+    goal_checker_plugin: "goal_checker"
+    controller_plugins: ["FollowPath"]
+
+    # Humanoid-specific controller configuration
+    FollowPath:
+      plugin: "nav2_mppi_controller::MPPIController"
+      time_steps: 50
+      model_dt: 0.05
+      batch_size: 1000
+      vx_std: 0.2
+      vy_std: 0.1
+      wz_std: 0.3
+      vx_max: 0.3      # Reduced for humanoid stability
+      vx_min: -0.15    # Reduced for humanoid stability
+      vy_max: 0.1      # Reduced for humanoid stability
+      wz_max: 0.5      # Reduced for humanoid stability
+      sim_time: 2.0
+      control_duration: 0.05
+      transform_tolerance: 0.1
+      heading_lookahead: 0.3
+      oscillation_score_threshold: 0.4
+      oscillation_reset_angle: 0.9
+      forward_point_distance: 0.1
+      frequency: 20.0
+      xy_goal_tolerance: 0.25
+      yaw_goal_tolerance: 0.25
+      stateful: True
+      critics: ["BaseObstacleCritic", "GoalCritic", "PathAlignCritic", "PathFollowCritic", "PathProgressCritic", "PreferForwardCritic"]
+      BaseObstacleCritic:
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.5
+      GoalCritic:
+        cost_power: 4
+        cost_scaling_factor: 4.0
+      PathAlignCritic:
+        cost_scaling_factor: 2.0
+        alignment_threshold: 0.25
+        only_rotate_to_path: false
+      PathFollowCritic:
+        cost_scaling_factor: 3.0
+        path_angle_bias: 1.0
+        track_error_scaling_factor: 2.0
+        min_track_error_distance: 0.1
+      PathProgressCritic:
+        cost_scaling_factor: 3.0
+        min_distance_to_unreachable_path: 0.5
+        path_progress_bias: 0.5
+      PreferForwardCritic:
+        cost_scaling_factor: 4.0
+        max_allowed_yaw_deviation_from_forward: 1.0
+
+controller_server_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      update_frequency: 5.0
+      publish_frequency: 2.0
+      global_frame: "odom"
+      robot_base_frame: "base_link"
+      use_sim_time: True
+      rolling_window: true
+      width: 6      # Adjusted for humanoid workspace
+      height: 6     # Adjusted for humanoid workspace
+      resolution: 0.05  # High resolution for precise navigation
+      robot_radius: 0.3  # Humanoid-specific radius
+      plugins: ["voxel_layer", "inflation_layer"]
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55  # Slightly larger for humanoid safety
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        publish_voxel_map: False
+        origin_z: 0.0
+        z_resolution: 0.2    # Voxel height for humanoid obstacle detection
+        z_voxels: 10         # Number of vertical voxels
+        max_obstacle_height: 2.0  # Maximum obstacle height humanoid can handle
+        mark_threshold: 0
+        observation_sources: scan
+        scan:
+          topic: "/scan"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      static_layer:
+        map_subscribe_transient_local: True
+      always_send_full_costmap: True
+  local_costmap_client:
+    ros__parameters:
+      use_sim_time: True
+  local_costmap_rclcpp_node:
+    ros__parameters:
+      use_sim_time: True
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: "map"
+      robot_base_frame: "base_link"
+      use_sim_time: True
+      robot_radius: 0.3  # Humanoid-specific radius
+      resolution: 0.05   # High resolution for detailed mapping
+      track_unknown_space: false
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: "/scan"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55  # Slightly larger for humanoid safety
+      always_send_full_costmap: True
+  global_costmap_client:
+    ros__parameters:
+      use_sim_time: True
+  global_costmap_rclcpp_node:
+    ros__parameters:
+      use_sim_time: True
+
+map_server:
+  ros__parameters:
+    use_sim_time: True
+    yaml_filename: "turtlebot3_world.yaml"
+
+map_saver:
+  ros__parameters:
+    use_sim_time: True
+    save_map_timeout: 5.0
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65
+
+planner_server:
+  ros__parameters:
+    expected_planner_frequency: 20.0
+    use_sim_time: True
+    planner_plugins: ["GridBased"]
+    GridBased:
+      plugin: "nav2_navfn_planner::NavfnPlanner"
+      tolerance: 0.5    # Slightly higher tolerance for humanoid navigation
+      use_astar: false
+      allow_unknown: true
+
+planner_server_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+recoveries_server:
+  ros__parameters:
+    costmap_topic: "local_costmap/costmap_raw"
+    footprint_topic: "local_costmap/published_footprint"
+    cycle_frequency: 10.0
+    recovery_plugins: ["spin", "backup", "wait"]
+    recovery_plugin_types: ["nav2_recoveries::Spin", "nav2_recoveries::BackUp", "nav2_recoveries::Wait"]
+    spin:
+      plugin: "nav2_recoveries::Spin"
+      sim_frequency: 5.0
+      forward_speed: 0.05   # Reduced for humanoid stability
+      angular_speed: 0.4    # Reduced for humanoid stability
+      target_yaw_tolerance: 0.05
+    backup:
+      plugin: "nav2_recoveries::BackUp"
+      sim_frequency: 5.0
+      forward_speed: -0.05  # Reduced for humanoid stability
+      backup_dist: 0.15     # Reduced distance for humanoid safety
+      target_x_tolerance: 0.05
+      target_y_tolerance: 0.05
+    wait:
+      plugin: "nav2_recoveries::Wait"
+      sim_frequency: 5.0
+      wait_duration: 2.0
+
+smoother_server:
+  ros__parameters:
+    use_sim_time: True
+    smoother_plugins: ["simple_smoother"]
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance: 1.0e-10
+      max_its: 1000
+      do_refinement: True
+
+behavior_server:
+  ros__parameters:
+    costmap_topic: "local_costmap/costmap_raw"
+    footprint_topic: "local_costmap/published_footprint"
+    cycle_frequency: 10.0
+    behavior_plugins: ["spin", "backup", "wait", "assisted_teleop", "assisted_teleop_3d"]
+    spin:
+      plugin: "nav2_behaviors::Spin"
+      spin_dist: 1.57
+    backup:
+      plugin: "nav2_behaviors::BackUp"
+      backup_dist: 0.15
+      backup_speed: 0.05
+    wait:
+      plugin: "nav2_behaviors::Wait"
+      wait_duration: 1s
+    assisted_teleop:
+      plugin: "nav2_behaviors::AssistedTeleop"
+      min_vel_trans: 0.05
+      max_vel_trans: 0.2
+      min_vel_theta: 0.05
+      max_vel_theta: 0.3
+    assisted_teleop_3d:
+      plugin: "nav2_behaviors::AssistedTeleop3D"
+      min_vel_trans: 0.05
+      max_vel_trans: 0.2
+      min_vel_theta: 0.05
+      max_vel_theta: 0.3
+
+robot_state_publisher:
+  ros__parameters:
+    use_sim_time: True
+
+waypoint_follower:
+  ros__parameters:
+    loop_rate: 20
+    stop_on_failure: false
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+    wait_at_waypoint:
+      plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+      enabled: true
+      waypoint_pause_duration: 200

@@ -1,0 +1,248 @@
+# Nav2 Local Planner Configuration for Humanoid Robots
+# Configuration for local trajectory generation optimized for humanoid locomotion
+
+controller_server:
+  ros__parameters:
+    # Local controller plugins
+    controller_plugins: ["FollowPath"]
+
+    # FollowPath controller configuration (MPPI Controller for humanoid)
+    FollowPath:
+      plugin: "nav2_mppi_controller::MPPIController"
+
+      # MPPI Controller specific parameters
+      time_steps: 50                    # Number of time steps in the prediction horizon
+      model_dt: 0.05                   # Time step for the motion model (s)
+      batch_size: 2000                 # Number of trajectories to sample per iteration
+      vx_std: 0.2                      # Standard deviation for velocity sampling
+      vy_std: 0.1                      # Standard deviation for lateral velocity sampling
+      wz_std: 0.3                      # Standard deviation for angular velocity sampling
+      vx_max: 0.3                      # Maximum forward velocity (m/s) - limited for humanoid
+      vx_min: -0.15                    # Minimum forward velocity (m/s) - limited for humanoid
+      vy_max: 0.1                      # Maximum lateral velocity (m/s) - limited for humanoid
+      wz_max: 0.5                      # Maximum angular velocity (rad/s) - limited for humanoid
+      sim_time: 2.5                    # Prediction horizon (s) - extended for humanoid stability
+      control_duration: 0.05           # Duration for each control command (s)
+      transform_tolerance: 0.1         # Tolerance for transform lookup (s)
+      heading_lookahead: 0.3           # Distance to look ahead for heading calculation (m)
+      oscillation_score_threshold: 0.4 # Threshold for oscillation detection
+      oscillation_reset_angle: 0.9     # Angle to reset oscillation detection (rad)
+      forward_point_distance: 0.1      # Distance to project velocity (m)
+      frequency: 20.0                  # Controller frequency (Hz) - matched to humanoid gait
+      xy_goal_tolerance: 0.3           # Tolerance for reaching goal position (m)
+      yaw_goal_tolerance: 0.25         # Tolerance for reaching goal orientation (rad)
+      stateful: True                   # Whether to maintain state between calls
+
+      # Critic weights and parameters for humanoid stability
+      critics: [
+        "BaseObstacleCritic",
+        "GoalCritic",
+        "PathAlignCritic",
+        "PathFollowCritic",
+        "PathProgressCritic",
+        "PreferForwardCritic",
+        "VelocityCritic",
+        "GaitPatternCritic"
+      ]
+
+      # Obstacle avoidance critic for humanoid
+      BaseObstacleCritic:
+        cost_scaling_factor: 3.0       # Scaling factor for obstacle costs
+        inflation_radius: 0.5          # Inflation radius for obstacle avoidance (m)
+
+      # Goal reaching critic
+      GoalCritic:
+        cost_power: 4                  # Power for goal cost calculation
+        cost_scaling_factor: 4.0       # Scaling factor for goal costs
+
+      # Path alignment critic for humanoid
+      PathAlignCritic:
+        cost_scaling_factor: 2.0       # Scaling factor for path alignment costs
+        alignment_threshold: 0.25      # Threshold for path alignment (m)
+        only_rotate_to_path: false     # Whether to only rotate to path
+
+      # Path following critic for humanoid
+      PathFollowCritic:
+        cost_scaling_factor: 3.0       # Scaling factor for path following costs
+        path_angle_bias: 1.0           # Bias for path angle costs
+        track_error_scaling_factor: 2.0 # Scaling factor for tracking error
+        min_track_error_distance: 0.1   # Minimum distance for track error (m)
+
+      # Path progress critic for humanoid
+      PathProgressCritic:
+        cost_scaling_factor: 3.0       # Scaling factor for path progress costs
+        min_distance_to_unreachable_path: 0.5  # Minimum distance to unreachable path (m)
+        path_progress_bias: 0.5        # Bias for path progress
+
+      # Forward preference critic for humanoid gait
+      PreferForwardCritic:
+        cost_scaling_factor: 4.0       # Scaling factor for forward preference
+        max_allowed_yaw_deviation_from_forward: 1.0  # Max yaw deviation (rad)
+
+      # Velocity regulation critic for humanoid
+      VelocityCritic:
+        cost_scaling_factor: 2.5       # Scaling factor for velocity costs
+        long_term_balance_threshold: 0.1 # Threshold for long-term velocity balance
+
+      # Gait pattern critic for humanoid locomotion
+      GaitPatternCritic:
+        cost_scaling_factor: 3.5       # Scaling factor for gait pattern costs
+        preferred_step_frequency: 1.5  # Preferred step frequency (Hz) for humanoid
+        step_pattern_deviation_penalty: 2.0  # Penalty for deviating from pattern
+
+    # Alternative local planner: DWA Controller
+    DWAPlanner:
+      plugin: "nav2_dwb_controller::DWBLocalPlanner"
+      debug_trajectory_details: False
+      min_vel_x: 0.0                   # Minimum x velocity (m/s)
+      min_vel_y: -0.1                  # Minimum y velocity (m/s)
+      max_vel_x: 0.3                   # Maximum x velocity (m/s) - limited for humanoid
+      max_vel_y: 0.1                   # Maximum y velocity (m/s) - limited for humanoid
+      max_vel_theta: 0.5               # Maximum angular velocity (rad/s) - limited for humanoid
+      min_vel_theta: -0.5              # Minimum angular velocity (rad/s)
+      acc_lim_x: 0.2                   # Acceleration limit in x (m/s^2) - limited for humanoid
+      acc_lim_y: 0.2                   # Acceleration limit in y (m/s^2) - limited for humanoid
+      acc_lim_theta: 0.3               # Acceleration limit in theta (rad/s^2) - limited for humanoid
+      decel_lim_x: -0.2                # Deceleration limit in x (m/s^2)
+      decel_lim_y: -0.2                # Deceleration limit in y (m/s^2)
+      decel_lim_theta: -0.3            # Deceleration limit in theta (rad/s^2)
+      vx_samples: 20                   # Number of x velocity samples
+      vy_samples: 10                   # Number of y velocity samples
+      vtheta_samples: 20               # Number of theta velocity samples
+      sim_time: 1.7                    # Simulation time (s)
+      linear_granularity: 0.05         # Linear granularity (m)
+      angular_granularity: 0.025       # Angular granularity (rad)
+      transform_tolerance: 0.2         # Transform tolerance (s)
+      xy_goal_tolerance: 0.25          # XY goal tolerance (m)
+      trans_stopped_vel: 0.25          # Translation stopped velocity (m/s)
+      theta_stopped_vel: 0.5           # Theta stopped velocity (rad/s)
+      dual_goal_scoring: False         # Whether to score dual goals
+
+    # Alternative: TEB Controller for smooth trajectories
+    TEBPlanner:
+      plugin: "nav2_te_b_controller::TEBController"
+      odom_topic: "odom"
+      map_frame: "map"
+
+      # Trajectory
+      teb_autosize: True              # Automatically resize trajectory
+      teb_optimizer_iterations: 5     # Number of optimizer iterations
+      optimization_activate: True      # Activate optimization
+      optimization_verbose: False      # Verbose optimization output
+      penalty_epsilon: 0.1            # Additive penalty for constraints
+      weight_max_vel_x: 2.0           # Weight for max velocity x
+      weight_max_vel_theta: 1.0       # Weight for max angular velocity
+      weight_acc_lim_x: 1.0           # Weight for x acceleration limit
+      weight_acc_lim_theta: 1.0       # Weight for angular acceleration limit
+      weight_kinematics_nh: 1000.0    # Weight for non-holonomic kinematics
+      weight_kinematics_forward_drive: 1.0  # Weight for forward driving
+      weight_kinematics_turning_radius: 1.0 # Weight for turning radius
+      weight_optimaltime: 1.0         # Weight for optimal time
+      weight_shortest_path: 0.0       # Weight for shortest path
+      weight_obstacle: 100.0          # Weight for obstacle avoidance
+      weight_inflation: 0.2           # Weight for inflation
+      weight_dynamic_obstacle: 10.0   # Weight for dynamic obstacles
+      selection_alternative_time_cost: False  # Select alternative time cost
+
+      # Homotopy Class Planner
+      enable_homotopy_class_planning: True  # Enable homotopy class planning
+      enable_multithreading: True      # Enable multithreading for HC planning
+      simple_exploration: False        # Use simple exploration strategy
+      max_number_classes: 4           # Maximum number of homotopy classes
+      selection_cost_hysteresis: 1.0  # Cost hysteresis for selection
+      selection_prefer_initial_plan: 0.95  # Preference for initial plan
+      selection_obst_cost_scale: 1.0  # Scale factor for obstacle costs
+      selection_viapoint_cost_scale: 1.0  # Scale factor for via-point costs
+      obstacle_keypoint_offset: 0.1   # Offset for obstacle keypoints
+      obstacle_heading_threshold: 0.45 # Threshold for obstacle heading
+      viapoints_all_candidates: True   # Consider via-points for all candidates
+      visualize_hc_graph: False        # Visualize homotopy class graph
+      visualize_with_time_as_z_axis_scale: 0.0  # Visualize time as z-axis
+
+      # Recovery
+      shrink_horizon_backup: True      # Shrink horizon for backup
+      shrink_horizon_min_duration: 10.0  # Minimum duration for shrinking
+      oscillation_recovery: True       # Enable oscillation recovery
+      oscillation_v_eps: 0.1          # Velocity epsilon for oscillation
+      oscillation_omega_eps: 0.1      # Angular velocity epsilon for oscillation
+      oscillation_recovery_min_duration: 10.0  # Minimum duration for recovery
+      oscillation_filter_duration: 10.0  # Duration for oscillation filter
+
+# Controller server general parameters
+controller_server_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+# Humanoid-specific local planning parameters
+humanoid_local_planner:
+  ros__parameters:
+    # Humanoid gait-specific parameters
+    preferred_gait_frequency: 1.5     # Preferred gait frequency (Hz)
+    max_gait_deviation: 0.2          # Maximum deviation from preferred gait
+    step_timing_tolerance: 0.1       # Tolerance for step timing (s)
+
+    # Balance and stability parameters
+    balance_margin: 0.1              # Balance margin for humanoid (m)
+    stability_threshold: 0.8         # Stability threshold (0-1)
+    zmp_margin: 0.05                 # Zero moment point margin (m)
+
+    # Step planning parameters
+    min_step_length: 0.1             # Minimum step length (m)
+    max_step_length: 0.5             # Maximum step length (m)
+    step_height: 0.05                # Nominal step height (m)
+    step_duration: 0.66              # Nominal step duration (s) for 1.5Hz gait
+
+    # Turning parameters for bipedal locomotion
+    min_turn_radius: 0.2             # Minimum turn radius (m)
+    turn_smoothness: 0.7             # Smoothness factor for turning
+    turn_compensation: 0.1           # Compensation for turning errors
+
+    # Footstep planning considerations
+    foot_separation: 0.2             # Distance between feet (m)
+    foot_size_x: 0.15                # Foot size in x direction (m)
+    foot_size_y: 0.1                 # Foot size in y direction (m)
+
+# Local costmap integration parameters
+local_planner_costmap:
+  ros__parameters:
+    # Parameters for integrating with local costmap
+    costmap_expansion: 0.1           # Expansion of costmap for humanoid safety
+    costmap_smoothing: True          # Enable costmap smoothing
+    smoothing_size: 3                # Size of smoothing kernel
+    cost_scaling: 1.5                # Scaling factor for costmap values
+
+    # Footprint considerations for humanoid
+    footprint_inflation: 0.1         # Additional inflation for humanoid footprint
+    footprint_buffer: 0.05           # Buffer around footprint (m)
+
+# Dynamic obstacle avoidance
+dynamic_obstacle_avoidance:
+  ros__parameters:
+    # Parameters for avoiding dynamic obstacles for humanoid
+    prediction_horizon: 1.5          # Prediction horizon for dynamic obstacles (s)
+    collision_time_threshold: 2.0    # Time threshold for collision prediction (s)
+    dynamic_obstacle_buffer: 0.4     # Buffer for dynamic obstacles (m)
+    velocity_filtering: True         # Enable velocity-based filtering
+    max_prediction_velocity: 1.0     # Maximum velocity for prediction (m/s)
+
+# Safety and recovery parameters
+local_planner_safety:
+  ros__parameters:
+    # Safety parameters for local planning
+    emergency_stop_distance: 0.3     # Distance to trigger emergency stop (m)
+    safety_factor: 1.5               # Safety factor for obstacle distances
+    recovery_velocity_scale: 0.3     # Scale factor for recovery velocities
+    stuck_detection: True            # Enable stuck detection
+    stuck_threshold: 0.05            # Threshold for stuck detection (m)
+    stuck_timeout: 5.0               # Timeout for stuck detection (s)
+
+# Performance optimization parameters
+local_planner_performance:
+  ros__parameters:
+    # Parameters for optimizing local planner performance
+    max_iterations: 1000             # Maximum iterations for optimization
+    convergence_epsilon: 0.001       # Convergence threshold
+    time_limit: 0.04                 # Time limit for planning (s) - 25Hz requirement
+    warm_start: True                 # Use warm start for optimization
+    trajectory_reduction: True       # Reduce trajectory points for efficiency
+    reduction_error: 0.02            # Error tolerance for trajectory reduction (m)

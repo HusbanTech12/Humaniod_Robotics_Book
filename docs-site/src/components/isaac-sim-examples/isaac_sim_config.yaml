@@ -1,0 +1,29 @@
+# Isaac Sim Configuration
+# Basic configuration for humanoid robot simulation
+
+simulation:
+  physics_dt: 0.005  # Physics update rate (seconds)
+  rendering_dt: 0.0166667  # Rendering update rate (seconds) ~60 FPS target
+  enable_scene_query_support: true
+
+physics:
+  gravity: [0.0, 0.0, -9.81]  # Gravity vector (m/s^2)
+  solver_type: "TGS"  # Physics solver type
+  min_position_iteration: 1
+  max_position_iteration: 256
+  min_velocity_iteration: 1
+  max_velocity_iteration: 1
+
+renderer:
+  resolution:
+    width: 1280
+    height: 720
+  enable_lights: true
+  enable_fog: false
+  light_intensity: 1000
+
+robot:
+  default_position: [0.0, 0.0, 0.5]  # Initial position (m)
+  default_orientation: [0.0, 0.0, 0.0, 1.0]  # Initial orientation (quaternion)
+  joint_damping: 0.01
+  joint_friction: 0.0

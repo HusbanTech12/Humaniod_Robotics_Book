@@ -1,0 +1,249 @@
+# Isaac Sim Physics Configuration for Humanoid Robot
+# Configuration for physics simulation parameters and properties
+
+physics:
+  # Global physics settings
+  global_settings:
+    gravity: [0.0, 0.0, -9.81]  # Gravity vector (m/s^2)
+    solver_type: "TGS"  # Physics solver type (TGS, PGS, TGS_GPU)
+    min_position_iteration: 1
+    max_position_iteration: 256
+    min_velocity_iteration: 1
+    max_velocity_iteration: 128
+    enable_stabilization: true
+    enable_ccd: false  # Continuous collision detection
+    ccd_threshold: 0.001
+    ccd_max_passes: 1
+    enable_gpu_compute: true
+    gpu_max_rigid_contact_count: 524288
+    gpu_max_rigid_patch_count: 81920
+    gpu_found_lost_pairs_capacity: 1024
+    gpu_found_lost_aggregate_pairs_capacity: 1024
+    gpu_total_aggregate_pairs_capacity: 1024
+    gpu_max_soft_body_contacts: 1024
+    gpu_max_particle_contacts: 1024
+    gpu_heap_capacity: 67108864
+    gpu_temp_buffer_size: 16777216
+    gpu_max_num_partitions: 8
+
+  # Rigid body settings
+  rigid_body:
+    default_solver_position_iteration_count: 4
+    default_solver_velocity_iteration_count: 1
+    default_sleep_threshold: 0.005
+    default_dof_lock_threshold: 0.005
+    default_create_sleeping_bodies: true
+    enable_gpu_dynamic_scene: false
+    gpu_max_rigid_body_count: 16384
+    gpu_max_articulation_count: 128
+    gpu_max_shapes_per_rigid_body: 128
+
+  # Articulation settings (for robot joints)
+  articulation:
+    enable_self_collisions: false
+    enable_gyroscopic_forces: true
+    solver_position_iteration_count: 4
+    solver_velocity_iteration_count: 1
+    sleep_threshold: 0.005
+    stabilization_threshold: 0.001
+    max_angular_speed: 50.0
+    max_linear_speed: 100.0
+    max_joint_velocity: 100.0
+    max_depenetration_velocity: 10.0
+    internal_drive_iterations: 1
+    external_drive_iterations: 1
+    joint_lower_limit_damping: 1.0
+    joint_upper_limit_damping: 1.0
+    joint_lower_limit_stiffness: 100.0
+    joint_upper_limit_stiffness: 100.0
+    joint_friction_coefficient: 0.1
+    joint_max_depenetration_velocity: 10.0
+    joint_max_angular_velocity: 50.0
+
+  # Material properties
+  materials:
+    default_material:
+      static_friction: 0.5
+      dynamic_friction: 0.5
+      restitution: 0.1
+      density: 1000.0  # kg/m^3
+
+    # Specific material definitions
+    materials_list:
+      - name: "robot_body"
+        static_friction: 0.6
+        dynamic_friction: 0.5
+        restitution: 0.05
+        density: 1100.0  # kg/m^3
+
+      - name: "floor"
+        static_friction: 0.8
+        dynamic_friction: 0.7
+        restitution: 0.1
+        density: 2500.0  # kg/m^3 (concrete-like)
+
+      - name: "table_top"
+        static_friction: 0.4
+        dynamic_friction: 0.3
+        restitution: 0.2
+        density: 700.0  # kg/m^3 (wood-like)
+
+      - name: "obstacle"
+        static_friction: 0.7
+        dynamic_friction: 0.6
+        restitution: 0.15
+        density: 2000.0  # kg/m^3
+
+  # Collision settings
+  collision:
+    contact_offset: 0.001  # Distance at which contacts are generated
+    rest_offset: 0.0  # Distance at which contacts are considered resting
+    bounce_threshold: 2.0  # Velocity threshold for bounce
+    friction_offset_threshold: 100.0
+    friction_correlation_distance: 0.025
+    gpu_max_particle_contacts: 1024
+    gpu_collision_stack_size: 64000000
+    gpu_found_lost_pairs_capacity: 1024
+    gpu_found_lost_aggregate_pairs_capacity: 1024
+    gpu_total_aggregate_pairs_capacity: 1024
+    gpu_max_soft_body_contacts: 1024
+    gpu_heap_capacity: 67108864
+    gpu_temp_buffer_size: 16777216
+
+  # Joint properties for humanoid robot
+  joints:
+    # Hip joints (FR, FL, HR, HL)
+    hip_joints:
+      damping: 0.1
+      stiffness: 100.0
+      armature: 0.01
+      friction: 0.1
+      max_velocity: 10.0
+      max_effort: 20.0
+
+    # Thigh joints
+    thigh_joints:
+      damping: 0.1
+      stiffness: 100.0
+      armature: 0.01
+      friction: 0.1
+      max_velocity: 10.0
+      max_effort: 55.0  # Higher for thigh joints
+
+    # Calf joints
+    calf_joints:
+      damping: 0.1
+      stiffness: 100.0
+      armature: 0.01
+      friction: 0.1
+      max_velocity: 10.0
+      max_effort: 55.0  # Higher for calf joints
+
+    # Default joint settings
+    default_joint:
+      damping: 0.05
+      stiffness: 100.0
+      armature: 0.01
+      friction: 0.05
+      max_velocity: 100.0
+      max_effort: 100.0
+
+  # Soft body settings (if needed)
+  soft_body:
+    enable: false
+    default_volume_stiffness: 1.0
+    default_volume_damping: 1.0
+    default_stretching_stiffness: 1.0
+    default_stretching_damping: 1.0
+    default_bending_stiffness: 0.1
+    default_bending_damping: 0.1
+    default_shear_stiffness: 1.0
+    default_shear_damping: 1.0
+    default_pose_matching_stiffness: 1.0
+    default_drag: 0.0
+    default_lift: 0.0
+    default_fluid_density: 0.0
+    default_fluid_viscosity: 0.0
+
+  # Cloth settings (if needed)
+  cloth:
+    enable: false
+    default_bending_damping: 0.01
+    default_stretching_stiffness: 1000.0
+    default_bending_stiffness: 100.0
+    default_shearing_stiffness: 100.0
+    default_compression_stiffness: 0.0
+    default_tether_stiffness: 1.0
+    default_tether_limit: 1.0
+    default_drag: 0.1
+    default_lift: 0.1
+    default_mass_scale: 1.0
+    default_fluid_density: 0.0
+    default_fluid_viscosity: 0.0
+
+  # Simulation time step settings
+  simulation:
+    dt: 0.005  # Simulation time step (seconds)
+    substeps: 1  # Number of substeps per frame
+    max_depenetration_velocity: 10.0
+    sleep_threshold: 0.005
+    stabilization_threshold: 0.001
+
+  # Performance optimization settings
+  performance:
+    use_gpu: true
+    use_fabric: true
+    enable_scene_updates: true
+    update_dt: 0.0166667  # ~60 Hz
+    max_deformable_particles: 100000
+    max_cloth_particles: 100000
+    max_cloth_transforms: 10000
+    max_cloth_thickness: 1.0
+
+  # Humanoid-specific physics settings
+  humanoid_specific:
+    # Settings for stable bipedal locomotion
+    center_of_mass_height: 0.3  # Height of CoM above ground for stable walking
+    balance_threshold: 0.05  # Threshold for balance stability (meters)
+    joint_limit_safety_factor: 0.95  # Safety factor for joint limits (0.0 to 1.0)
+    contact_detection_threshold: 0.001  # Threshold for detecting ground contact (meters)
+    friction_compensation_factor: 1.2  # Factor to compensate for friction in control
+
+    # Mass properties for different body parts
+    body_mass_properties:
+      base_link:
+        mass: 3.3  # kg
+        center_of_mass: [0.0, 0.0, 0.0]  # CoM offset from link origin
+        inertia_diagonal: [0.01, 0.02, 0.02]  # Ixx, Iyy, Izz (kg*m^2)
+
+      hip_links:
+        mass: 0.634  # kg
+        center_of_mass: [0.0, 0.0, -0.02647]  # CoM offset from link origin
+        inertia_diagonal: [0.000307082, 0.00028975, 0.000158938]  # Ixx, Iyy, Izz (kg*m^2)
+
+      thigh_links:
+        mass: 1.032  # kg
+        center_of_mass: [0.0, 0.018, -0.032]  # CoM offset from link origin
+        inertia_diagonal: [0.005117249, 0.005142752, 0.001339191]  # Ixx, Iyy, Izz (kg*m^2)
+
+      calf_links:
+        mass: 0.241  # kg
+        center_of_mass: [0.0, 0.0, -0.15]  # CoM offset from link origin
+        inertia_diagonal: [0.001890977, 0.001890977, 0.0001125]  # Ixx, Iyy, Izz (kg*m^2)
+
+  # Ground contact settings
+  ground_contact:
+    enable: true
+    friction_model: "patch"  # Options: "patch", "cone", "one_direction", "two_direction"
+    bounce_threshold: 2.0  # Velocity threshold for bounce (m/s)
+    max_contact_impulse: 1000.0  # Maximum contact impulse (N*s)
+    contact_merge_radius: 0.01  # Radius for merging nearby contacts (meters)
+    contact_offset: 0.005  # Contact offset for ground (meters)
+    rest_offset: 0.001  # Rest offset for ground (meters)
+
+  # Control-Physics interface settings
+  control_interface:
+    physics_to_control_dt: 0.01  # Physics update rate for control (100 Hz)
+    control_to_physics_dt: 0.01  # Control update rate for physics (100 Hz)
+    force_control_delay: 0.005  # Delay in force control (seconds)
+    position_control_delay: 0.002  # Delay in position control (seconds)

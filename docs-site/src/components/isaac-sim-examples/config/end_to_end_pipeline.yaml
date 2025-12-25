@@ -1,0 +1,388 @@
+# End-to-End Pipeline Configuration for Isaac Sim
+# Configuration for the complete AI-robot brain pipeline integration
+
+# General Pipeline Configuration
+general:
+  pipeline_name: "ai_robot_brain_end_to_end"
+  pipeline_version: "1.0.0"
+  enable_pipeline: true
+  run_frequency: 30  # Hz
+  max_execution_time: 0.1  # Maximum time per cycle (seconds)
+  enable_monitoring: true
+  enable_logging: true
+  log_level: "INFO"
+
+# Perception Pipeline Configuration
+perception:
+  enable: true
+  modules:
+    object_detection:
+      enable: true
+      model_path: "/models/yolo_humanoid.pt"
+      confidence_threshold: 0.7
+      nms_threshold: 0.5
+      input_size: [640, 480]
+      update_rate: 30  # Hz
+      enable_gpu: true
+      gpu_device: 0
+
+    depth_processing:
+      enable: true
+      processing_method: "filtered"
+      min_depth: 0.1  # meters
+      max_depth: 10.0  # meters
+      update_rate: 30  # Hz
+      enable_hole_filling: true
+      hole_fill_radius: 3
+
+    vslam:
+      enable: true
+      tracking_rate: 30  # Hz
+      mapping_rate: 10   # Hz
+      min_num_features: 1000
+      max_num_features: 2000
+      feature_quality_level: 0.01
+      enable_loop_closure: true
+      enable_relocalization: true
+      map_resolution: 0.05  # meters/cell
+
+    sensor_fusion:
+      enable: true
+      fusion_method: "kalman_filter"
+      update_rate: 100  # Hz
+      enable_covariance_estimation: true
+      process_noise: [0.1, 0.1, 0.1, 0.01, 0.01, 0.01]  # [pos, vel, orient]
+      measurement_noise: [0.05, 0.05, 0.05, 0.01, 0.01, 0.01]  # [pos, vel, orient]
+
+  preprocessing:
+    image_normalization: true
+    noise_reduction: true
+    distortion_correction: true
+
+  postprocessing:
+    data_smoothing: true
+    outlier_removal: true
+    temporal_filtering: true
+
+# Navigation Pipeline Configuration
+navigation:
+  enable: true
+  modules:
+    global_planner:
+      enable: true
+      planner_type: "navfn"
+      update_rate: 1  # Hz (planning not frequent)
+      costmap_topic: "/global_costmap/costmap"
+      allow_unknown: false
+      planner_window_x: 0.0  # Use full map if 0
+      planner_window_y: 0.0  # Use full map if 0
+      default_tolerance: 0.1  # meters
+
+    local_planner:
+      enable: true
+      planner_type: "teb_local_planner"
+      update_rate: 10  # Hz
+      controller_frequency: 20  # Hz
+      max_vel_x: 1.0  # m/s
+      min_vel_x: 0.1  # m/s
+      max_vel_theta: 1.0  # rad/s
+      min_vel_theta: 0.1  # rad/s
+      acc_lim_x: 2.5  # m/s^2
+      acc_lim_theta: 3.2  # rad/s^2
+
+    behavior_trees:
+      enable: true
+      tree_type: "recovery"
+      default_tree_path: "/behaviors/default_bt.xml"
+      recovery_behaviors:
+        - "clear_costmap_recovery"
+        - "rotate_recovery"
+        - "wait_recovery"
+
+    costmap:
+      enable: true
+      update_frequency: 10.0  # Hz
+      publish_frequency: 5.0  # Hz
+      width: 40.0  # meters
+      height: 40.0  # meters
+      resolution: 0.05  # meters/cell
+      origin_x: -20.0  # meters
+      origin_y: -20.0  # meters
+      plugins:
+        - name: "static_layer"
+          type: "nav2_costmap_2d::StaticLayer"
+        - name: "obstacle_layer"
+          type: "nav2_costmap_2d::ObstacleLayer"
+        - name: "inflation_layer"
+          type: "nav2_costmap_2d::InflationLayer"
+
+  safety:
+    enable_collision_detection: true
+    collision_threshold: 0.5  # meters
+    enable_dynamic_obstacle_avoidance: true
+    obstacle_buffer_zone: 0.3  # meters
+    emergency_stop_distance: 0.2  # meters
+
+# Learning Pipeline Configuration
+learning:
+  enable: true
+  modules:
+    policy_network:
+      enable: true
+      architecture: "actor_critic"
+      hidden_layers: [512, 256, 128]
+      activation_function: "elu"
+      output_activation: "tanh"
+      action_space_size: 12  # 12 DOF for Unitree A1
+      observation_space_size: 41  # Combined state space
+      init_std: 1.0
+
+    training:
+      enable: true
+      algorithm: "PPO"
+      learning_rate: 3.0e-4
+      batch_size: 64
+      epochs: 10
+      clip_epsilon: 0.2
+      gamma: 0.99
+      gae_lambda: 0.95
+      entropy_coef: 0.01
+      value_loss_coef: 0.5
+      max_grad_norm: 0.5
+
+    replay_buffer:
+      enable: true
+      buffer_size: 100000
+      warmup_steps: 1000
+      sample_batch_size: 256
+      enable_prioritized_sampling: false
+
+    curriculum_learning:
+      enable: true
+      initial_difficulty: 0.0
+      difficulty_increment: 0.01
+      performance_threshold: 0.8
+      update_frequency: 1000
+
+    domain_randomization:
+      enable: true
+      randomization_frequency: 1000
+      initial_strength: 0.2
+      max_strength: 0.8
+      randomization_groups:
+        visual: ["lighting", "textures", "colors"]
+        physical: ["mass", "friction", "damping"]
+        environmental: ["terrain", "obstacles", "gravity"]
+
+  exploration:
+    enable: true
+    exploration_strategy: "gaussian_noise"
+    initial_noise_std: 0.5
+    noise_decay_rate: 0.995
+    min_noise_std: 0.1
+
+# Control Pipeline Configuration
+control:
+  enable: true
+  modules:
+    joint_controller:
+      enable: true
+      control_frequency: 100  # Hz
+      control_type: "position_velocity"
+      position_gain: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]  # Kp for each joint
+      velocity_gain: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]  # Kv for each joint
+      feedforward_gain: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # Feedforward gain for each joint
+
+    balance_controller:
+      enable: true
+      controller_type: "com_balancer"
+      control_frequency: 200  # Hz
+      com_reference: [0.0, 0.0, 0.6]  # Center of mass reference (x, y, z)
+      com_gain: [100.0, 100.0, 100.0]  # [x, y, z] gains
+      orientation_gain: [50.0, 50.0, 50.0]  # [roll, pitch, yaw] gains
+
+    trajectory_generator:
+      enable: true
+      trajectory_type: "minimum_jerk"
+      trajectory_duration: 1.0  # seconds
+      max_velocity: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]  # rad/s for each joint
+      max_acceleration: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]  # rad/s^2 for each joint
+
+  safety:
+    enable_joint_limits: true
+    enable_collision_avoidance: true
+    enable_balance_check: true
+    joint_limit_margin: 0.1  # radians
+    balance_threshold: 0.3  # meters (max CoM displacement)
+
+# Integration Pipeline Configuration
+integration:
+  enable: true
+  modules:
+    perception_to_navigation:
+      enable: true
+      interface_type: "middleware"
+      update_rate: 10  # Hz
+      transform_timeout: 1.0  # seconds
+      confidence_threshold: 0.7
+      fusion_method: "probabilistic"
+
+    learning_to_control:
+      enable: true
+      interface_type: "direct"
+      update_rate: 50  # Hz
+      action_delay_compensation: 0.02  # seconds
+      action_smoothing: true
+      smoothing_factor: 0.8
+
+    multi_modal_fusion:
+      enable: true
+      fusion_method: "attention_based"
+      attention_heads: 4
+      fusion_frequency: 30  # Hz
+      confidence_weighting: true
+
+  coordination:
+    enable_task_coordination: true
+    coordination_frequency: 10  # Hz
+    priority_scheme: "behavior_tree"
+    conflict_resolution: "highest_priority"
+
+# Pipeline Synchronization Configuration
+synchronization:
+  enable: true
+  method: "time_based"
+  time_sync_threshold: 0.05  # seconds
+  enable_buffering: true
+  buffer_size: 10
+  enable_interpolation: true
+  interpolation_method: "linear"
+
+# Performance Configuration
+performance:
+  enable_profiling: true
+  profiling_frequency: 1.0  # Hz
+  enable_resource_monitoring: true
+  cpu_threshold: 80.0  # percentage
+  gpu_threshold: 85.0  # percentage
+  memory_threshold: 80.0  # percentage
+
+  optimization:
+    enable_multi_threading: true
+    thread_affinity: true
+    enable_gpu_acceleration: true
+    gpu_memory_fraction: 0.8
+    enable_tensorrt: true
+    tensorrt_precision: "fp16"
+
+# Safety and Emergency Configuration
+safety:
+  enable_emergency_stop: true
+  emergency_stop_conditions:
+    - "joint_limit_violation"
+    - "collision_imminent"
+    - "balance_lost"
+    - "communication_timeout"
+    - "hardware_fault"
+
+  safety_monitoring:
+    enable_joint_monitoring: true
+    enable_sensor_monitoring: true
+    enable_actuator_monitoring: true
+    enable_communication_monitoring: true
+
+  recovery:
+    enable_automatic_recovery: true
+    recovery_strategies:
+      - "move_to_safe_position"
+      - "shutdown_motors"
+      - "activate_brakes"
+    recovery_timeout: 5.0  # seconds
+
+# Logging and Monitoring Configuration
+logging:
+  enable: true
+  log_directory: "./logs/ai_robot_brain/"
+  log_level: "INFO"
+  enable_performance_logging: true
+  enable_debug_logging: false
+  log_rotation_size: "100MB"
+  log_backup_count: 5
+
+monitoring:
+  enable: true
+  metrics_collection:
+    - "pipeline_execution_time"
+    - "module_processing_time"
+    - "data_throughput"
+    - "memory_usage"
+    - "cpu_usage"
+    - "gpu_usage"
+    - "communication_latency"
+    - "success_rates"
+
+  dashboard:
+    enable: true
+    port: 8080
+    refresh_rate: 1.0  # Hz
+
+# Hardware Configuration
+hardware:
+  robot_model: "unitree_a1"
+  joint_names: ["FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
+               "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
+               "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
+               "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"]
+
+  sensors:
+    imu:
+      topic: "/imu/data"
+      update_rate: 400  # Hz
+    camera:
+      topic: "/camera/rgb/image_rect_color"
+      update_rate: 30  # Hz
+    depth_camera:
+      topic: "/camera/depth/image_rect_raw"
+      update_rate: 30  # Hz
+    lidar:
+      topic: "/scan"
+      update_rate: 10  # Hz
+
+  actuators:
+    joint_motors:
+      update_rate: 1000  # Hz
+      command_delay: 0.001  # seconds
+
+# Environment Configuration
+environment:
+  simulation:
+    enable: true
+    physics_engine: "physx"
+    update_rate: 500  # Hz
+    substeps: 2
+
+  real_world:
+    enable: false
+    localization_method: "amcl"
+    mapping_method: "slam_toolbox"
+
+# Testing and Validation Configuration
+testing:
+  enable_unit_testing: true
+  enable_integration_testing: true
+  enable_performance_testing: true
+  test_scenarios:
+    - "static_obstacle_avoidance"
+    - "dynamic_obstacle_avoidance"
+    - "long_term_navigation"
+    - "multi_floor_navigation"
+    - "human_interaction"
+    - "adverse_weather_simulation"
+
+  validation:
+    enable_validation: true
+    validation_frequency: 100  # cycles
+    performance_thresholds:
+      success_rate: 0.95
+      average_completion_time: 60.0  # seconds
+      energy_efficiency: 100.0  # units

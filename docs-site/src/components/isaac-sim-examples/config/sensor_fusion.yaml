@@ -1,0 +1,199 @@
+# Isaac ROS Sensor Fusion Configuration
+# Configuration for combining data from multiple sensors (camera, LiDAR, IMU) for enhanced perception
+
+sensor_fusion:
+  # Multi-sensor data fusion parameters
+  fusion_config:
+    enable_sensor_fusion: true  # Enable sensor fusion pipeline
+    fusion_method: "probabilistic"  # Fusion method: probabilistic, kalman, particle
+    timestamp_sync_tolerance: 0.01  # Tolerance for timestamp synchronization (seconds)
+    max_sync_queue_size: 10  # Maximum queue size for synchronization
+    enable_data_association: true  # Enable data association for tracking
+    association_threshold: 0.5  # Threshold for data association (meters)
+
+  # Camera-LiDAR fusion parameters
+  camera_lidar_fusion:
+    enable_camera_lidar_fusion: true  # Enable fusion of camera and LiDAR data
+    camera_topic: "camera/rgb/image_rect_color"  # Camera image topic
+    camera_info_topic: "camera/rgb/camera_info"  # Camera calibration info
+    lidar_topic: "scan"  # LiDAR scan topic
+    pointcloud_topic: "camera/depth/color/points"  # Point cloud topic
+    fusion_output_topic: "fused_camera_lidar"  # Fused output topic
+    projection_method: "pinhole"  # Projection method for camera-LiDAR fusion
+    enable_ground_plane_estimation: true  # Enable ground plane estimation
+    ground_plane_height: 0.0  # Estimated ground plane height (meters)
+
+  # IMU integration parameters
+  imu_integration:
+    enable_imu_fusion: true  # Enable IMU data fusion
+    imu_topic: "imu/data"  # IMU data topic
+    imu_frame_id: "imu_link"  # IMU frame ID
+    enable_orientation_fusion: true  # Enable orientation data fusion
+    enable_angular_velocity_fusion: true  # Enable angular velocity fusion
+    enable_linear_acceleration_fusion: true  # Enable linear acceleration fusion
+    orientation_variance: [0.01, 0.01, 0.01]  # Variance for orientation
+    angular_velocity_variance: [0.01, 0.01, 0.01]  # Variance for angular velocity
+    linear_acceleration_variance: [0.01, 0.01, 0.01]  # Variance for linear acceleration
+
+  # Point cloud processing parameters
+  pointcloud_processing:
+    enable_pointcloud_fusion: true  # Enable point cloud fusion
+    input_pointcloud_topic: "camera/depth/color/points"  # Input point cloud
+    output_pointcloud_topic: "fused_pointcloud"  # Fused point cloud output
+    voxel_grid_filter: true  # Enable voxel grid filtering
+    voxel_size: [0.01, 0.01, 0.01]  # Voxel size for filtering (meters)
+    remove_outliers: true  # Enable outlier removal
+    outlier_radius_search: 0.05  # Radius for outlier search (meters)
+    outlier_min_neighbors: 5  # Minimum neighbors for outlier removal
+    min_point_count: 10  # Minimum points required for valid fusion
+    max_point_distance: 10.0  # Maximum distance for valid points (meters)
+
+  # Object tracking and fusion
+  object_tracking:
+    enable_object_fusion: true  # Enable object detection fusion
+    detection_topics:  # List of detection topics to fuse
+      - "detectnet/detections"
+      - "spatial_detection_node/spatial_detections"
+    tracking_output_topic: "fused_objects"  # Fused object tracking output
+    max_objects: 50  # Maximum number of tracked objects
+    tracking_lifetime: 5.0  # Object tracking lifetime (seconds)
+    velocity_estimation: true  # Enable velocity estimation for tracked objects
+    velocity_smoothing_factor: 0.1  # Smoothing factor for velocity estimation
+    enable_prediction: true  # Enable object prediction
+    prediction_horizon: 2.0  # Prediction horizon (seconds)
+
+  # Sensor calibration parameters
+  calibration_config:
+    camera_lidar_extrinsics:  # Camera-LiDAR extrinsic calibration
+      translation: [0.1, 0.0, 0.2]  # Translation vector [x, y, z] (meters)
+      rotation: [0.0, 0.0, 0.0, 1.0]  # Rotation quaternion [x, y, z, w]
+    camera_imu_extrinsics:  # Camera-IMU extrinsic calibration
+      translation: [0.05, 0.0, 0.1]  # Translation vector [x, y, z] (meters)
+      rotation: [0.0, 0.0, 0.0, 1.0]  # Rotation quaternion [x, y, z, w]
+    lidar_imu_extrinsics:  # LiDAR-IMU extrinsic calibration
+      translation: [0.0, 0.0, 0.15]  # Translation vector [x, y, z] (meters)
+      rotation: [0.0, 0.0, 0.0, 1.0]  # Rotation quaternion [x, y, z, w]
+
+  # Fusion algorithm parameters
+  algorithm_config:
+    kalman_filter:  # Kalman filter parameters for fusion
+      enable_kalman_filtering: true
+      process_noise_covariance: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # Process noise
+      measurement_noise_covariance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]  # Measurement noise
+      initial_state_covariance: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # Initial covariance
+    particle_filter:  # Particle filter parameters (if used)
+      enable_particle_filtering: false
+      num_particles: 100  # Number of particles
+      resample_threshold: 0.5  # Resampling threshold
+      alpha_slow: 0.001  # Alpha parameter for slow learning
+      alpha_fast: 0.1  # Alpha parameter for fast learning
+
+  # Performance optimization
+  performance_config:
+    enable_multithreading: true  # Enable multithreading for fusion
+    thread_pool_size: 4  # Number of threads in pool
+    enable_gpu_processing: true  # Enable GPU processing where available
+    gpu_device_id: 0  # GPU device ID for processing
+    max_processing_rate: 30.0  # Maximum processing rate (Hz)
+    enable_async_processing: true  # Enable asynchronous processing
+    async_queue_size: 5  # Size of async processing queue
+    memory_pool_size: 1048576  # Memory pool size (bytes)
+
+  # Quality of service settings
+  qos_config:
+    input_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    output_qos:
+      history: "keep_last"
+      depth: 5
+      reliability: "best_effort"
+      durability: "volatile"
+    sensor_qos:
+      history: "keep_last"
+      depth: 10
+      reliability: "best_effort"
+      durability: "volatile"
+
+  # Data validation and filtering
+  validation_config:
+    enable_data_validation: true  # Enable input data validation
+    min_sensor_frequency: 1.0  # Minimum sensor frequency (Hz)
+    max_sensor_frequency: 100.0  # Maximum sensor frequency (Hz)
+    enable_frequency_filtering: true  # Enable frequency-based filtering
+    enable_range_filtering: true  # Enable range-based filtering
+    range_filter_min: 0.1  # Minimum valid range (meters)
+    range_filter_max: 50.0  # Maximum valid range (meters)
+    enable_variance_filtering: true  # Enable variance-based filtering
+    variance_threshold: 0.1  # Variance threshold for filtering
+
+  # Debug and monitoring
+  debug_config:
+    enable_debug_output: false  # Enable debug output
+    debug_output_path: "/tmp/sensor_fusion_debug"  # Debug output path
+    log_level: "INFO"  # Logging level: DEBUG, INFO, WARN, ERROR
+    enable_visualization: false  # Enable fusion result visualization
+    visualization_topic: "sensor_fusion/visualization"  # Visualization topic
+    enable_profiling: false  # Enable performance profiling
+    profile_output_path: "/tmp/sensor_fusion_profile"  # Profile output path
+
+  # Sensor fusion weights
+  sensor_weights:
+    camera_weight: 0.4  # Weight for camera data
+    lidar_weight: 0.4  # Weight for LiDAR data
+    imu_weight: 0.2  # Weight for IMU data
+    confidence_threshold: 0.5  # Minimum confidence for fusion
+    enable_adaptive_weights: true  # Enable adaptive weight adjustment
+    weight_update_rate: 10.0  # Rate to update weights (Hz)
+
+  # Fusion output configuration
+  output_config:
+    enable_3d_bounding_boxes: true  # Enable 3D bounding box output
+    enable_tracked_objects: true  # Enable tracked object output
+    enable_fused_pointcloud: true  # Enable fused point cloud output
+    enable_environment_map: true  # Enable environment map output
+    output_frame_id: "base_link"  # Output frame ID
+    publish_rate: 30.0  # Rate to publish fusion results (Hz)
+
+  # Error handling and recovery
+  error_handling:
+    enable_error_recovery: true  # Enable automatic error recovery
+    max_retries: 3  # Maximum retry attempts
+    retry_delay: 0.1  # Delay between retries (seconds)
+    fallback_behavior: "disable_fusion"  # Fallback behavior on error
+    sensor_timeout: 1.0  # Timeout for sensor data (seconds)
+    enable_sensor_monitoring: true  # Enable sensor status monitoring
+
+# ROS 2 node configuration
+ros_config:
+  node_name: "isaac_ros_sensor_fusion"
+  namespace: "humanoid_robot"
+  use_sim_time: true  # Use simulation time in Isaac Sim environment
+  qos_overrides:
+    /parameter_events:
+      publisher:
+        history: "keep_last"
+        depth: 1000
+        reliability: "reliable"
+        durability: "volatile"
+  remappings:
+    - from: "camera/image"
+      to: "camera/rgb/image_rect_color"
+    - from: "camera/camera_info"
+      to: "camera/rgb/camera_info"
+    - from: "lidar/scan"
+      to: "scan"
+    - from: "imu/data"
+      to: "imu/data"
+    - from: "detections"
+      to: "detectnet/detections"
+    - from: "spatial_detections"
+      to: "detectnet/spatial_detections"
+    - from: "pointcloud"
+      to: "camera/depth/color/points"
+    - from: "fused_output"
+      to: "sensor_fusion/fused_data"
+    - from: "tracked_objects"
+      to: "sensor_fusion/tracked_objects"

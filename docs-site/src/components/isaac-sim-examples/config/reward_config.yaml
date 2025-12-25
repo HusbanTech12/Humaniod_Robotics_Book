@@ -1,0 +1,189 @@
+# Reward Configuration for Humanoid Robot Control
+# Defines reward functions for reinforcement learning training
+
+# General reward configuration
+general:
+  enable_debug: false              # Enable debug outputs for reward components
+  normalize_rewards: true          # Normalize rewards to [-1, 1] range
+  reward_scaling: 1.0              # Global scaling factor for all rewards
+
+# Locomotion rewards
+locomotion:
+  # Forward velocity tracking reward
+  forward_velocity_tracking:
+    weight: 1.0                    # Weight for forward velocity tracking
+    target_velocity: 1.0           # Target forward velocity (m/s)
+    sigma: 0.25                    # Width of the velocity tracking reward
+    enable: true                   # Enable this reward component
+
+  # Lateral velocity penalty
+  lateral_velocity_penalty:
+    weight: -0.1                   # Penalty weight for lateral movement
+    enable: true
+
+  # Angular velocity penalty
+  angular_velocity_penalty:
+    weight: -0.05                  # Penalty weight for angular velocity
+    enable: true
+
+# Stability rewards
+stability:
+  # Upright orientation reward
+  upright_orientation:
+    weight: 1.0                    # Weight for upright orientation
+    target_z_orientation: 1.0      # Target z-axis orientation (upright)
+    tolerance: 0.1                 # Tolerance for upright orientation
+    enable: true
+
+  # Base height reward
+  base_height:
+    weight: 0.5                    # Weight for maintaining proper base height
+    target_height: 0.3             # Target base height (m)
+    tolerance: 0.1                 # Tolerance for height maintenance
+    enable: true
+
+  # Roll and pitch penalty
+  roll_pitch_penalty:
+    weight: -0.3                   # Penalty for excessive roll/pitch
+    enable: true
+
+# Movement efficiency rewards
+movement_efficiency:
+  # Action smoothness penalty
+  action_smoothness:
+    weight: -0.001                 # Penalty for large action changes
+    enable: true
+
+  # Joint velocity penalty
+  joint_velocity_penalty:
+    weight: -0.0001                # Penalty for excessive joint velocities
+    enable: true
+
+  # Joint position limit penalty
+  joint_limit_penalty:
+    weight: -1.0                   # Penalty for approaching joint limits
+    threshold: 0.95                # Threshold for joint limit violation (0.95 = 95% of range)
+    enable: true
+
+# Contact and gait rewards
+contact_gait:
+  # Foot contact timing reward
+  foot_contact_timing:
+    weight: 0.3                    # Weight for proper foot contact timing
+    target_swing_time: 0.3         # Target swing phase duration (s)
+    enable: true
+
+  # Air time reward for feet
+  feet_air_time:
+    weight: 0.2                    # Reward for feet being in air (for running/walking)
+    min_air_time: 0.2              # Minimum air time to get reward
+    enable: true
+
+  # Foot contact consistency
+  foot_contact_consistency:
+    weight: 0.1                    # Reward for consistent foot contact pattern
+    enable: true
+
+# Safety rewards
+safety:
+  # Collision penalty
+  collision_penalty:
+    weight: -1.0                   # Penalty for robot collisions
+    enable: true
+
+  # Self-collision penalty
+  self_collision_penalty:
+    weight: -2.0                   # Penalty for self-collisions
+    enable: true
+
+  # Dangerous joint configuration penalty
+  dangerous_configuration:
+    weight: -0.5                   # Penalty for dangerous joint configurations
+    enable: true
+
+# Task-specific rewards
+task_specific:
+  # Target reaching reward (for navigation tasks)
+  target_reaching:
+    weight: 2.0                    # Weight for reaching target position
+    distance_threshold: 0.5        # Distance threshold for target reaching (m)
+    enable: false                  # Enable for navigation tasks
+
+  # Goal orientation reward
+  goal_orientation:
+    weight: 0.5                    # Weight for achieving goal orientation
+    angle_threshold: 0.2           # Angle threshold for goal orientation (rad)
+    enable: false
+
+# Exploration rewards
+exploration:
+  # Novel state exploration bonus
+  exploration_bonus:
+    weight: 0.01                   # Weight for exploration bonus
+    novelty_threshold: 0.1         # Threshold for considering state novel
+    enable: false                  # Enable exploration bonuses
+
+# Reward shaping parameters
+shaping:
+  # Reward shaping for faster learning
+  shaping_factor: 0.9              # Factor for reward shaping (0.0 to 1.0)
+  use_potential_shaping: true      # Use potential-based reward shaping
+  potential_function: "distance"   # Type of potential function to use
+
+# Termination penalties
+termination:
+  # Penalty applied when episode terminates early
+  early_termination_penalty:
+    weight: -10.0                  # Penalty for early termination
+    enable: true
+
+  # Penalty for falling
+  falling_penalty:
+    weight: -5.0                   # Penalty for falling (deviation from upright)
+    orientation_threshold: 0.5     # Threshold for considering as fallen
+    enable: true
+
+# Custom reward functions
+custom_rewards:
+  # Custom reward for specific behaviors
+  custom_1:
+    name: "energy_efficiency"      # Name of custom reward
+    weight: -0.01                  # Weight for custom reward
+    parameters:                    # Parameters for custom reward function
+      torque_coefficient: 0.001
+      velocity_coefficient: 0.0001
+    enable: true
+
+  # Another custom reward
+  custom_2:
+    name: "symmetry"               # Name of custom reward
+    weight: 0.1                    # Weight for custom reward
+    parameters:                    # Parameters for custom reward function
+      symmetry_threshold: 0.1
+    enable: true
+
+# Reward combination method
+combination:
+  method: "weighted_sum"           # Method for combining reward components
+  normalization: "min_max"         # Normalization method for reward components
+  clipping:
+    enabled: true                  # Enable reward clipping
+    min_value: -10.0               # Minimum reward value
+    max_value: 10.0                # Maximum reward value
+
+# Curriculum learning rewards
+curriculum:
+  # Rewards that change based on training progress
+  adaptive_weights:
+    enabled: true                  # Enable adaptive reward weights
+    update_frequency: 1000         # How often to update weights (iterations)
+    difficulty_levels:             # Different difficulty levels
+      - level: 0                   # Beginner level
+        weights_multiplier: 1.0
+        target_velocity: 0.5
+      - level: 1                   # Intermediate level
+        weights_multiplier: 1.2
+        target_velocity: 0.8
+      - level: 2                   # Advanced level
+        weights_multiplier: 1.5
+        target_velocity: 1.2

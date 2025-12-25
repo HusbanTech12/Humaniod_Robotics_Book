@@ -1,0 +1,198 @@
+# Isaac Sim Sensor Configuration for Humanoid Robot
+# Configuration for all sensors attached to the humanoid robot
+
+sensors:
+  # RGB Camera Configuration
+  rgb_camera:
+    enable: true
+    sensor_name: "rgb_camera"
+    parent_link: "base_link"
+    position: [0.1, 0.0, 0.2]  # Position relative to parent link (meters)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    sensor_params:
+      resolution:
+        width: 640
+        height: 480
+      fov: 60.0  # Field of view in degrees
+      clipping_range: [0.1, 100.0]  # Near/far clipping in meters
+      focus_distance: 10.0
+      fstop: 0.8
+    publisher_params:
+      topic: "/camera/rgb/image_raw"
+      queue_size: 10
+      frame_id: "camera_rgb_optical_frame"
+    update_period: 0.033  # Update every 33ms (30 FPS)
+
+  # Depth Camera Configuration
+  depth_camera:
+    enable: true
+    sensor_name: "depth_camera"
+    parent_link: "base_link"
+    position: [0.1, 0.0, 0.2]  # Position relative to parent link (meters)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    sensor_params:
+      resolution:
+        width: 640
+        height: 480
+      fov: 60.0  # Field of view in degrees
+      clipping_range: [0.1, 10.0]  # Near/far clipping in meters
+      focus_distance: 10.0
+      fstop: 0.8
+    publisher_params:
+      topic: "/camera/depth/image_raw"
+      queue_size: 10
+      frame_id: "camera_depth_optical_frame"
+    update_period: 0.033  # Update every 33ms (30 FPS)
+
+  # LiDAR Configuration
+  lidar:
+    enable: true
+    sensor_name: "velodyne_lidar"
+    parent_link: "base_link"
+    position: [0.0, 0.0, 0.5]  # Position relative to parent link (meters)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    sensor_params:
+      # Velodyne VLP-16 parameters
+      rotation_rate: 10.0  # Hz
+      points_per_second: 500000
+      number_of_channels: 16
+      horizontal_resolution: 0.18  # degrees
+      vertical_resolution: 2.0  # degrees
+      scan_line_resolution: 0.25  # degrees
+      max_range: 100.0  # meters
+      min_range: 0.2  # meters
+      enable_semantics: false
+      # Vertical angles for VLP-16 (-15 to +15 degrees)
+      vertical_angle_offsets: [-15.0, -13.0, -11.0, -9.0, -7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 9.0, 11.0, 13.0, 15.0]
+    publisher_params:
+      topic: "/scan"
+      queue_size: 10
+      frame_id: "velodyne"
+    update_period: 0.1  # Update every 100ms (10 Hz)
+
+  # IMU Configuration
+  imu:
+    enable: true
+    sensor_name: "imu_sensor"
+    parent_link: "base_link"
+    position: [0.0, 0.0, 0.1]  # Position relative to parent link (meters)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    sensor_params:
+      # Noise parameters
+      linear_acceleration_noise_variance: [0.01, 0.01, 0.01]  # m/s^2
+      angular_velocity_noise_variance: [0.01, 0.01, 0.01]  # rad/s
+      orientation_noise_variance: [0.01, 0.01, 0.01]  # rad
+    publisher_params:
+      topic: "/imu/data"
+      queue_size: 10
+      frame_id: "imu_link"
+    update_period: 0.01  # Update every 10ms (100 Hz)
+
+  # Force/Torque Sensor Configuration (for feet)
+  left_foot_ft_sensor:
+    enable: true
+    sensor_name: "left_foot_ft_sensor"
+    parent_link: "FL_calf"
+    child_link: "FL_foot"
+    position: [0.0, 0.0, -0.05]  # Position relative to parent link (meters)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    sensor_params:
+      force_range: [0.0, 1000.0]  # N
+      torque_range: [0.0, 100.0]  # Nm
+    publisher_params:
+      topic: "/left_foot/ft_sensor"
+      queue_size: 10
+      frame_id: "left_foot_frame"
+    update_period: 0.005  # Update every 5ms (200 Hz)
+
+  right_foot_ft_sensor:
+    enable: true
+    sensor_name: "right_foot_ft_sensor"
+    parent_link: "FR_calf"
+    child_link: "FR_foot"
+    position: [0.0, 0.0, -0.05]  # Position relative to parent link (meters)
+    orientation: [0.0, 0.0, 0.0, 1.0]  # Orientation as quaternion (x, y, z, w)
+    sensor_params:
+      force_range: [0.0, 1000.0]  # N
+      torque_range: [0.0, 100.0]  # Nm
+    publisher_params:
+      topic: "/right_foot/ft_sensor"
+      queue_size: 10
+      frame_id: "right_foot_frame"
+    update_period: 0.005  # Update every 5ms (200 Hz)
+
+  # Joint Position Sensors (part of articulation)
+  joint_position_sensors:
+    enable: true
+    sensor_names: ["FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
+                   "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
+                   "HR_hip_joint", "HR_thigh_joint", "HR_calf_joint",
+                   "HL_hip_joint", "HL_thigh_joint", "HL_calf_joint"]
+    publisher_params:
+      topic: "/joint_states"
+      queue_size: 10
+      frame_id: "base_link"
+    update_period: 0.01  # Update every 10ms (100 Hz)
+
+# Sensor Processing Pipeline Configuration
+processing_pipeline:
+  # RGB Camera Processing
+  rgb_camera_processing:
+    enable_rectification: true
+    rectified_topic: "/camera/rgb/image_rect_color"
+    camera_info_topic: "/camera/rgb/camera_info"
+    distortion_model: "plumb_bob"
+    # Distortion coefficients [k1, k2, p1, p2, k3]
+    distortion_coefficients: [0.0, 0.0, 0.0, 0.0, 0.0]
+    # Camera intrinsic matrix [fx, 0, cx, 0, fy, cy, 0, 0, 1]
+    camera_matrix: [320.0, 0.0, 320.0, 0.0, 320.0, 240.0, 0.0, 0.0, 1.0]
+
+  # Depth Camera Processing
+  depth_camera_processing:
+    enable_registration: true  # Register depth to RGB frame
+    aligned_depth_topic: "/camera/depth/image_aligned"
+    depth_to_rgb_transform: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # Translation and rotation
+    depth_unit: "meters"  # Depth values in meters
+    depth_range: [0.1, 10.0]  # Valid depth range
+
+  # LiDAR Processing
+  lidar_processing:
+    enable_ground_removal: true
+    ground_removal_height: 0.1  # Height above ground to consider as obstacles
+    enable_clustering: true
+    clustering_voxel_size: 0.1  # Voxel size for clustering
+    enable_ray_based_filtering: true
+    ray_filter_min_points: 5  # Minimum points per ray
+
+# Coordinate Frames
+frames:
+  # Base frames
+  base_frame: "base_link"
+  odom_frame: "odom"
+  map_frame: "map"
+
+  # Sensor frames
+  camera_rgb_frame: "camera_rgb_optical_frame"
+  camera_depth_frame: "camera_depth_optical_frame"
+  lidar_frame: "velodyne"
+  imu_frame: "imu_link"
+
+  # Robot frames
+  left_foot_frame: "left_foot_frame"
+  right_foot_frame: "right_foot_frame"
+  world_frame: "world"
+
+# TF Transform Configuration
+tf_config:
+  publish_sensor_tf: true
+  sensor_tf_publish_rate: 30.0  # Hz
+  publish_joint_tf: true
+  joint_tf_publish_rate: 30.0  # Hz
+  tf_buffer_size: 10
+
+# Sensor Synchronization
+synchronization:
+  enable: true
+  sync_method: "approximate_time"  # Options: "exact_time", "approximate_time"
+  sync_queue_size: 10
+  max_time_diff: 0.1  # Maximum time difference between synchronized messages (seconds)

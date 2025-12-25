@@ -15,7 +15,7 @@ This guide will help you install ROS 2 Humble Hawksbill, which is the recommende
 ```bash
 # Add the ROS 2 GPG key
 sudo apt update && sudo apt install -y curl gnupg lsb-release
-curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros- humble.repos | sudo tee /etc/ros/ros.repos
+curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros-humble.repos | sudo tee /etc/ros/ros.repos
 sudo apt update
 ```
 

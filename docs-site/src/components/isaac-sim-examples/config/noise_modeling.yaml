@@ -1,0 +1,253 @@
+# Noise Modeling Configuration for Isaac Sim
+# Configuration for realistic sensor and actuator noise modeling
+
+# General Noise Configuration
+general:
+  enable_noise: true              # Enable noise modeling globally
+  noise_seed: 42                  # Random seed for noise generation
+  update_frequency: 100           # How often to update noise parameters (in steps)
+
+# Sensor Noise Models
+sensors:
+  # IMU (Inertial Measurement Unit) Noise
+  imu:
+    accelerometer:
+      noise_density: 0.0025       # Accelerometer noise density (continuous-time, m/s^2/sqrt(Hz))
+      random_walk: 0.0004         # Accelerometer random walk (m/s^3/sqrt(Hz))
+      bias_correlation_time: 300.0 # Bias correlation time (seconds)
+      turn_on_bias: 0.1           # Time to reach full bias (seconds)
+
+    gyroscope:
+      noise_density: 0.00014      # Gyroscope noise density (continuous-time, rad/s/sqrt(Hz))
+      random_walk: 2.0e-05        # Gyroscope random walk (rad/s^2/sqrt(Hz))
+      bias_correlation_time: 300.0 # Bias correlation time (seconds)
+      turn_on_bias: 0.1           # Time to reach full bias (seconds)
+
+    magnetometer:
+      noise_density: 0.0005       # Magnetometer noise density (Gauss/sqrt(Hz))
+      random_walk: 1.0e-06        # Magnetometer random walk (Gauss/sqrt(Hz))
+
+  # Camera Noise
+  camera:
+    # Image sensor noise
+    pixel_noise:
+      noise_type: "gaussian"      # Type of noise: gaussian, uniform, etc.
+      mean: 0.0                   # Mean of noise distribution
+      std: 0.5                    # Standard deviation of noise
+      pixel_range: [0, 255]       # Valid pixel value range
+
+    # Quantization noise
+    quantization:
+      bits: 8                     # Number of quantization bits
+      enable: true                # Enable quantization noise
+
+    # Fixed pattern noise
+    fixed_pattern:
+      enable: true                # Enable fixed pattern noise
+      intensity: 0.01             # Intensity of fixed pattern noise
+
+    # Shot noise (photon noise)
+    shot_noise:
+      enable: true                # Enable shot noise
+      quantum_efficiency: 0.5     # Quantum efficiency of sensor
+      readout_noise: 2.0          # Readout noise (electrons)
+
+    # Thermal noise
+    thermal:
+      enable: false               # Enable thermal noise
+      temperature: 300.0          # Temperature in Kelvin
+      thermal_factor: 0.01        # Thermal noise factor
+
+  # LiDAR Noise
+  lidar:
+    distance_noise:
+      noise_type: "gaussian"      # Type of distance noise
+      mean: 0.0                   # Mean of distance noise (m)
+      std: 0.01                   # Standard deviation of distance noise (m)
+      std_bias: 0.005             # Bias in standard deviation (m)
+
+    angular_noise:
+      noise_type: "gaussian"      # Type of angular noise
+      mean: 0.0                   # Mean of angular noise (rad)
+      std: 0.0001                 # Standard deviation of angular noise (rad)
+
+    intensity_noise:
+      noise_type: "gaussian"      # Type of intensity noise
+      mean: 0.0                   # Mean of intensity noise
+      std: 0.05                   # Standard deviation of intensity noise
+
+    dropout_probability: 0.001    # Probability of complete measurement dropout
+
+  # Force/Torque Sensor Noise
+  force_torque:
+    force_noise:
+      noise_type: "gaussian"      # Type of force noise
+      std: [0.01, 0.01, 0.01]   # Standard deviation for [fx, fy, fz] (N)
+
+    torque_noise:
+      noise_type: "gaussian"      # Type of torque noise
+      std: [0.001, 0.001, 0.001] # Standard deviation for [tx, ty, tz] (Nm)
+
+    bias_drift_rate: [1e-6, 1e-6, 1e-6, 1e-7, 1e-7, 1e-7]  # Bias drift rate for [fx, fy, fz, tx, ty, tz]
+
+  # Joint Encoder Noise
+  joint_encoders:
+    position_noise:
+      noise_type: "gaussian"      # Type of position noise
+      std: 0.001                  # Standard deviation of position noise (rad or m)
+
+    velocity_noise:
+      noise_type: "gaussian"      # Type of velocity noise
+      std: 0.01                   # Standard deviation of velocity noise (rad/s or m/s)
+
+    resolution: 12                # Encoder resolution (bits)
+
+# Actuator Noise Models
+actuators:
+  # Motor noise
+  motors:
+    torque_noise:
+      noise_type: "gaussian"      # Type of torque noise
+      std: 0.02                   # Standard deviation of torque noise (as fraction of max torque)
+
+    # Motor dynamics noise
+    dynamics:
+      friction_noise:
+        static_friction_std: 0.01 # Standard deviation of static friction noise
+        dynamic_friction_std: 0.005 # Standard deviation of dynamic friction noise
+        viscous_friction_std: 0.001 # Standard deviation of viscous friction noise
+
+      backlash_noise:
+        enable: true              # Enable backlash noise
+        backlash_std: 0.0001      # Standard deviation of backlash (rad)
+
+      gear_ratio_noise:
+        enable: true              # Enable gear ratio noise
+        gear_ratio_std: 0.001     # Standard deviation of gear ratio noise
+
+  # Control command noise
+  control:
+    command_noise:
+      noise_type: "gaussian"      # Type of command noise
+      std: 0.005                  # Standard deviation of command noise (as fraction of command)
+
+    # Command delay and jitter
+    command_delay:
+      delay_mean: 0.002           # Mean command delay (s)
+      delay_std: 0.0005           # Standard deviation of command delay (s)
+      delay_type: "gaussian"      # Type of delay distribution
+
+# Environmental Noise
+environmental:
+  # External disturbances
+  disturbances:
+    force_disturbance:
+      enable: true                # Enable external force disturbances
+      magnitude_range: [0.1, 2.0] # Range of disturbance magnitudes (N)
+      frequency_range: [0.1, 5.0] # Range of disturbance frequencies (Hz)
+      noise_type: "pink"          # Type of disturbance noise
+
+    torque_disturbance:
+      enable: true                # Enable external torque disturbances
+      magnitude_range: [0.01, 0.2] # Range of disturbance magnitudes (Nm)
+      frequency_range: [0.1, 3.0] # Range of disturbance frequencies (Hz)
+
+  # Wind effects
+  wind:
+    enable: false                 # Enable wind simulation
+    velocity_range: [0.0, 5.0]    # Range of wind velocities (m/s)
+    turbulence_intensity: 0.1     # Turbulence intensity factor
+    gust_frequency: 0.1           # Frequency of gusts (Hz)
+
+# Noise Processes
+processes:
+  # Different types of noise processes
+  white_noise:
+    enabled: true                 # Enable white noise processes
+    bandwidth: 100.0              # Bandwidth for white noise (Hz)
+
+  pink_noise:
+    enabled: true                 # Enable pink noise (1/f noise)
+    alpha: 1.0                    # Exponent for 1/f^alpha noise
+    bandwidth: 10.0               # Bandwidth for pink noise (Hz)
+
+  brown_noise:
+    enabled: false                # Enable brown noise (random walk)
+    diffusion_coefficient: 0.1    # Diffusion coefficient
+
+  # Bias drift processes
+  bias_drift:
+    type: "random_walk"           # Type of bias drift: random_walk, first_order, etc.
+    time_constant: 3600.0         # Time constant for first-order drift (s)
+    diffusion_coefficient: 1e-6   # Diffusion coefficient for random walk (1/s^2)
+
+# Frequency Domain Noise Characteristics
+frequency_domain:
+  # Characteristics in frequency domain
+  accelerometer:
+    noise_floor: 1.0e-4         # Noise floor (m/s^2/sqrt(Hz))
+    resonance_frequency: 100.0    # Resonance frequency (Hz)
+    quality_factor: 10.0          # Quality factor for resonance
+
+  gyroscope:
+    noise_floor: 1.0e-5         # Noise floor (rad/s/sqrt(Hz))
+    resonance_frequency: 150.0    # Resonance frequency (Hz)
+    quality_factor: 8.0           # Quality factor for resonance
+
+# Spatial Correlation
+spatial_correlation:
+  # Spatial correlation between sensors
+  imu_correlation:
+    correlation_length: 0.1       # Correlation length (m) between IMU sensors
+    correlation_decay: 0.5        # Decay rate of correlation
+
+  camera_correlation:
+    pixel_correlation: 0.1        # Correlation between adjacent pixels
+
+# Temporal Correlation
+temporal_correlation:
+  # Temporal correlation of noise
+  imu_temporal:
+    correlation_time: 0.01        # Correlation time for IMU noise (s)
+
+  camera_temporal:
+    correlation_time: 0.001       # Correlation time for camera noise (s)
+
+# Noise Validation
+validation:
+  # Parameters for validating noise models
+  enable_validation: true         # Enable noise validation
+  validation_frequency: 1000      # How often to validate noise characteristics
+  noise_characterization:
+    sample_size: 10000            # Number of samples for noise characterization
+    confidence_level: 0.95        # Confidence level for validation
+
+# Noise Scheduling
+scheduling:
+  # How to apply noise over time
+  enable_adaptive: false          # Enable adaptive noise based on training progress
+  noise_schedule: "constant"      # Type of schedule: constant, linear, exponential
+  initial_noise_level: 1.0        # Initial noise level (multiplier)
+  target_noise_level: 1.0         # Target noise level (multiplier)
+  schedule_steps: 10000           # Number of steps for schedule
+
+# Noise Groups
+groups:
+  # Group noise parameters for coordinated application
+  proprioceptive_sensors:
+    - "joint_encoders"
+    - "force_torque"
+
+  exteroceptive_sensors:
+    - "camera"
+    - "lidar"
+
+  inertial_sensors:
+    - "imu"
+
+# Performance Considerations
+performance:
+  # Settings for balancing realism and computational cost
+  enable_approximate_noise: false # Enable faster approximate noise generation
+  noise_decimation_factor: 1      # Decimation factor for noise updates
+  parallel_noise_computation: true # Enable parallel noise computation

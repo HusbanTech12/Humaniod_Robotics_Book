@@ -1,0 +1,284 @@
+# Nav2 Costmap Configuration for Humanoid Robot
+# Configuration for costmap layers optimized for humanoid robot navigation
+
+# Global Costmap Configuration
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      # Basic parameters
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      transform_tolerance: 0.5
+      use_sim_time: True
+      width: 100
+      height: 100
+      resolution: 0.05  # High resolution for humanoid precision
+      origin_x: -25.0
+      origin_y: -25.0
+
+      # Robot footprint for humanoid
+      robot_base_frame: "base_link"
+      footprint: "[[-0.3, -0.2], [-0.3, 0.2], [0.3, 0.2], [0.3, -0.2]]"  # Humanoid-specific footprint
+      footprint_padding: 0.01
+      global_frame: "map"
+      robot_radius: 0.3  # Approximate radius for circular footprint if used
+
+      # Plugins for global costmap
+      plugins: [
+        "static_layer",
+        "obstacle_layer",
+        "inflation_layer"
+      ]
+
+      # Static layer configuration
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+        transform_tolerance: 0.5
+        map_topic: "/vslam/occupancy_grid"  # Subscribe to VSLAM-generated map
+        track_unknown_space: False
+        use_maximum: False
+        unknown_cost_value: -1
+        trinary_costmap: True
+        lethal_cost_threshold: 99
+        observation_sources: ""
+
+      # Obstacle layer configuration for humanoid
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: ["scan", "detection_scan"]
+        footprint_clearing_enabled: True
+        max_obstacle_height: 2.0  # Humanoid can handle obstacles up to 2m
+        combination_method: 1
+
+        # Laser scan observation
+        scan:
+          topic: "/scan"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+
+        # Detection-based obstacle observation from perception system
+        detection_scan:
+          topic: "/detectnet/spatial_detections"
+          max_obstacle_height: 1.8
+          clearing: True
+          marking: True
+          data_type: "PointCloud2"
+          raytrace_max_range: 5.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 4.0
+          obstacle_min_range: 0.0
+
+      # Inflation layer configuration for humanoid safety
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        enabled: True
+        cost_scaling_factor: 3.0  # Increased for humanoid safety
+        inflation_radius: 0.6     # Larger inflation for humanoid stability
+        inflate_unknown: False
+        inflate_around_unknown: False
+
+      # Always send full costmap for better humanoid navigation
+      always_send_full_costmap: True
+
+  # Client configuration for global costmap
+  global_costmap_client:
+    ros__parameters:
+      use_sim_time: True
+
+  # RCLCPP node configuration for global costmap
+  global_costmap_rclcpp_node:
+    ros__parameters:
+      use_sim_time: True
+
+# Local Costmap Configuration
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      # Basic parameters
+      update_frequency: 5.0
+      publish_frequency: 2.0
+      transform_tolerance: 0.25
+      use_sim_time: True
+      width: 6.0    # 6m x 6m local costmap for humanoid workspace
+      height: 6.0
+      resolution: 0.05  # High resolution for humanoid precision
+      origin_x: -3.0
+      origin_y: -3.0
+
+      # Robot footprint for humanoid
+      robot_base_frame: "base_link"
+      footprint: "[[-0.3, -0.2], [-0.3, 0.2], [0.3, 0.2], [0.3, -0.2]]"  # Humanoid-specific footprint
+      footprint_padding: 0.01
+      global_frame: "odom"
+      robot_radius: 0.3  # Approximate radius for circular footprint if used
+
+      # Rolling window for humanoid navigation
+      rolling_window: True
+
+      # Plugins for local costmap
+      plugins: [
+        "voxel_layer",
+        "inflation_layer"
+      ]
+
+      # Voxel layer configuration for 3D obstacle detection
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        footprint_clearing_enabled: True
+        max_obstacle_height: 2.0    # Maximum height humanoid should avoid
+        origin_z: 0.0
+        z_resolution: 0.2           # 20cm resolution in height
+        z_voxels: 10                # 10 voxels up to 2m height
+        unknown_threshold: 15       # 15/16 unknown to mark unknown
+        mark_threshold: 0           # Mark as obstacle immediately
+        observation_sources: ["scan", "detection_scan", "depth_camera"]
+        combination_method: 1
+
+        # Laser scan observation
+        scan:
+          topic: "/scan"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+
+        # Detection-based obstacle observation
+        detection_scan:
+          topic: "/detectnet/spatial_detections"
+          max_obstacle_height: 1.8
+          clearing: True
+          marking: True
+          data_type: "PointCloud2"
+          raytrace_max_range: 5.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 4.0
+          obstacle_min_range: 0.0
+
+        # Depth camera observation for close-range obstacles
+        depth_camera:
+          topic: "/camera/depth/color/points"
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          data_type: "PointCloud2"
+          raytrace_max_range: 2.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 1.8
+          obstacle_min_range: 0.0
+
+      # Inflation layer configuration for local costmap
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        enabled: True
+        cost_scaling_factor: 3.0  # Higher scaling for local navigation safety
+        inflation_radius: 0.5     # Moderate inflation for humanoid local planning
+        inflate_unknown: False
+        inflate_around_unknown: False
+
+      # Always send full costmap for better local planning
+      always_send_full_costmap: True
+
+  # Client configuration for local costmap
+  local_costmap_client:
+    ros__parameters:
+      use_sim_time: True
+
+  # RCLCPP node configuration for local costmap
+  local_costmap_rclcpp_node:
+    ros__parameters:
+      use_sim_time: True
+
+# Humanoid-Specific Costmap Parameters
+humanoid_costmap_params:
+  ros__parameters:
+    # Parameters specifically tuned for humanoid robot characteristics
+    humanoid:
+      # Footprint parameters
+      base_width: 0.4           # Width of humanoid base (m)
+      base_length: 0.6          # Length of humanoid base (m)
+      foot_separation: 0.2      # Distance between feet (m)
+
+      # Safety margins
+      safety_margin: 0.3        # Additional safety margin (m)
+      clearance_height: 1.8     # Height clearance for humanoid (m)
+
+      # Dynamic obstacle considerations
+      dynamic_buffer: 0.4       # Buffer for dynamic obstacles (m)
+      prediction_horizon: 1.5   # Time horizon for dynamic obstacle prediction (s)
+
+      # Stability considerations
+      stability_margin: 0.1     # Additional margin for stability (m)
+      turn_radius_offset: 0.1   # Additional offset for turning (m)
+
+    # Costmap integration with perception
+    perception_integration:
+      detection_timeout: 0.5    # Timeout for detection data (s)
+      detection_buffer: 0.2     # Buffer for detection-based obstacles (m)
+      confidence_threshold: 0.7 # Minimum confidence for detection integration
+
+    # VSLAM map integration
+    vslam_integration:
+      map_update_frequency: 1.0 # Frequency for VSLAM map updates (Hz)
+      map_consistency_check: True  # Enable consistency checks
+      localization_threshold: 0.1  # Localization accuracy threshold (m)
+
+# Obstacle filtering parameters
+obstacle_filtering:
+  ros__parameters:
+    # Parameters for filtering obstacles based on humanoid capabilities
+    min_obstacle_height: 0.1    # Minimum height to consider as obstacle (m)
+    max_obstacle_height: 2.0    # Maximum height humanoid can handle (m)
+    min_obstacle_size: 0.05     # Minimum size to consider as obstacle (m)
+
+    # Dynamic obstacle filtering
+    min_dynamic_obstacle_speed: 0.05  # Minimum speed for dynamic obstacle (m/s)
+    max_dynamic_obstacle_speed: 2.0   # Maximum speed to handle (m/s)
+
+    # Traversable obstacle parameters
+    max_traversable_slope: 0.3  # Maximum slope humanoid can traverse (rad)
+    max_traversable_height_diff: 0.1  # Maximum height difference (m)
+
+# Costmap update parameters
+update_params:
+  ros__parameters:
+    # Parameters for optimizing costmap updates
+    update_method: "rolling_window"  # Method for updating costmap
+    update_radius: 3.0              # Radius for local updates (m)
+    update_frequency_scaling: True   # Enable scaling based on robot speed
+
+    # Memory management
+    max_cache_size: 100             # Maximum number of cached updates
+    cache_timeout: 5.0              # Timeout for cached data (s)
+
+    # Performance parameters
+    max_processing_time: 0.1        # Maximum time for costmap processing (s)
+    enable_threading: True          # Enable multi-threading for updates
+
+# Recovery and safety parameters
+safety_params:
+  ros__parameters:
+    # Parameters for ensuring safe navigation
+    emergency_stop_distance: 0.25   # Distance to trigger emergency stop (m)
+    safety_factor: 1.5              # Factor to increase safety margins
+    recovery_buffer: 0.5            # Buffer for recovery behaviors (m)
+
+    # Collision prediction
+    collision_prediction_horizon: 2.0  # Time horizon for collision prediction (s)
+    min_collision_distance: 0.3        # Minimum safe distance (m)
+
+    # Humanoid-specific safety
+    balance_margin: 0.15              # Margin for humanoid balance (m)
+    step_obstacle_threshold: 0.05     # Threshold for step obstacles (m)
