@@ -1,0 +1,26 @@
+# SafetyValidation.srv
+# Service definition for validating action plans for safety constraints
+
+ActionPlan action_plan
+RobotState robot_state
+
+---
+bool is_safe
+Violation[] violations
+Alternative[] suggested_alternatives
+string message
+
+# Safety violation
+message Violation
+{
+  string type
+  string description
+  string severity  # low, medium, high, critical
+}
+
+# Suggested alternative action
+message Alternative
+{
+  string task_id
+  string modified_parameters  # JSON string
+}

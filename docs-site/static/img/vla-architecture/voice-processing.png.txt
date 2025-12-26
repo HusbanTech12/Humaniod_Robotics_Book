@@ -1,0 +1,13 @@
+# Voice Processing Architecture Diagram
+
+This file serves as a placeholder for the voice processing architecture diagram.
+The actual diagram should illustrate:
+
+- Voice input from microphone array
+- OpenAI Whisper processing
+- Natural language understanding
+- LLM-based task decomposition
+- Action plan generation
+- Integration with other VLA components
+
+The diagram should show the flow from voice command to structured action plan.

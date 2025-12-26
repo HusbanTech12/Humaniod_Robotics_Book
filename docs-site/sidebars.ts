@@ -57,6 +57,78 @@ const sidebars: SidebarsConfig = {
         'tutorials/ai-agent-ros2-bridge',
       ],
     },
+    {
+      type: 'category',
+      label: 'Module 3: The AI-Robot Brain (NVIDIA Isaac™)',
+      items: [
+        'module-3-isaac-ai-brain/introduction',
+        'module-3-isaac-ai-brain/isaac-platform-overview',
+        'module-3-isaac-ai-brain/isaac-sim-setup',
+        'module-3-isaac-ai-brain/perception-pipelines',
+        'module-3-isaac-ai-brain/navigation-intelligence',
+        'module-3-isaac-ai-brain/learning-based-control',
+        'module-3-isaac-ai-brain/sim-to-real-transfer',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Module 4: Vision-Language-Action (VLA)',
+      items: [
+        'module-4-vla/introduction',
+        'module-4-vla/vla-foundations',
+        'module-4-vla/voice-language-processing',
+        'module-4-vla/cognitive-planning',
+        'module-4-vla/vision-grounding',
+        'module-4-vla/action-execution',
+        'module-4-vla/safety-reliability',
+        'module-4-vla/capstone-architecture',
+        'module-4-vla/end-to-end-pipeline',
+        'module-4-vla/quickstart-guide',
+      ],
+    },
+  ],
+  module2Sidebar: [
+    {
+      type: 'category',
+      label: 'Module 2: The Digital Twin (Gazebo & Unity)',
+      items: [
+        'module-2-digital-twin/intro',
+        'module-2-digital-twin/humanoid-model-configuration',
+      ],
+    },
+  ],
+  module3Sidebar: [
+    {
+      type: 'category',
+      label: 'Module 3: The AI-Robot Brain (NVIDIA Isaac™)',
+      items: [
+        'module-3-isaac-ai-brain/introduction',
+        'module-3-isaac-ai-brain/isaac-platform-overview',
+        'module-3-isaac-ai-brain/isaac-sim-setup',
+        'module-3-isaac-ai-brain/perception-pipelines',
+        'module-3-isaac-ai-brain/navigation-intelligence',
+        'module-3-isaac-ai-brain/learning-based-control',
+        'module-3-isaac-ai-brain/sim-to-real-transfer',
+      ],
+    },
+  ],
+  module4Sidebar: [
+    {
+      type: 'category',
+      label: 'Module 4: Vision-Language-Action (VLA)',
+      items: [
+        'module-4-vla/introduction',
+        'module-4-vla/vla-foundations',
+        'module-4-vla/voice-language-processing',
+        'module-4-vla/cognitive-planning',
+        'module-4-vla/vision-grounding',
+        'module-4-vla/action-execution',
+        'module-4-vla/safety-reliability',
+        'module-4-vla/capstone-architecture',
+        'module-4-vla/end-to-end-pipeline',
+        'module-4-vla/quickstart-guide',
+      ],
+    },
   ],
 };
 

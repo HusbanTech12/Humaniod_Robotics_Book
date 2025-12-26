@@ -1,0 +1,365 @@
+openapi: 3.0.3
+info:
+  title: RAG Chatbot API
+  description: API for the Retrieval-Augmented Generation Chatbot for Published Book
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+paths:
+  /chat:
+    post:
+      summary: Submit a query and receive a response with citations
+      description: Process user query using RAG and return response with proper citations
+      operationId: chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response with citations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - api_key: []
+
+  /chat/stream:
+    post:
+      summary: Submit a query and receive a streaming response with citations
+      description: Process user query using RAG and return streaming response with proper citations
+      operationId: chatStream
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Streaming response with Server-Sent Events
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  event:
+                    type: string
+                    enum: [chunk, citations, done]
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/StreamChunk'
+                      - $ref: '#/components/schemas/Citation'
+                      - type: string
+                        description: "Empty string for 'done' event"
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - api_key: []
+
+  /ingest:
+    post:
+      summary: Ingest book content for RAG
+      description: Process and store book content for retrieval
+      operationId: ingest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestionRequest'
+      responses:
+        '200':
+          description: Ingestion completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResponse'
+        '400':
+          description: Invalid ingestion data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - requires admin credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - admin_api_key: []
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Check the health status of the service
+      operationId: health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - query
+        - book_id
+      properties:
+        query:
+          type: string
+          description: The user's question about the book
+          example: "What are the main themes in chapter 3?"
+        book_id:
+          type: string
+          description: Identifier for the book being queried
+          example: "book-978-0123456789"
+        mode:
+          type: string
+          enum: [full-book, selected-text]
+          description: The operational mode
+          default: full-book
+        selected_text:
+          type: string
+          description: Text selected by user in selected-text mode (required if mode is selected-text)
+          example: "This is the selected text from the book that the user wants to ask about."
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - citations
+        - query_id
+        - response_id
+      properties:
+        response:
+          type: string
+          description: The AI-generated response
+          example: "The main themes in chapter 3 include identity and belonging..."
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+          description: Citations supporting the response
+        query_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the original query
+        response_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this response
+        latency_ms:
+          type: integer
+          description: Time taken to generate the response in milliseconds
+
+    StreamChunk:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          description: A chunk of the response text
+          example: "The main themes in chapter 3 include "
+        is_final:
+          type: boolean
+          description: Whether this is the final chunk
+
+    Citation:
+      type: object
+      required:
+        - source_text
+        - location
+      properties:
+        source_text:
+          type: string
+          description: The text from the book that supports this citation
+          example: "Chapter 3 discusses the themes of identity and belonging in detail."
+        location:
+          type: object
+          description: Location information in the book
+          properties:
+            chapter:
+              type: string
+              example: "Chapter 3"
+            section:
+              type: string
+              example: "Identity and Belonging"
+            page:
+              type: integer
+              example: 45
+            paragraph:
+              type: integer
+              example: 2
+
+    IngestionRequest:
+      type: object
+      required:
+        - book_id
+        - title
+        - content
+        - metadata
+      properties:
+        book_id:
+          type: string
+          description: Unique identifier for the book
+          example: "book-978-0123456789"
+        title:
+          type: string
+          description: Title of the book
+          example: "The Art of Programming"
+        content:
+          type: string
+          description: Full text content of the book with structural metadata
+        metadata:
+          type: object
+          description: Metadata about the book structure
+          properties:
+            chapters:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "ch1"
+                  title:
+                    type: string
+                    example: "Introduction"
+                  start_page:
+                    type: integer
+                    example: 1
+                  end_page:
+                    type: integer
+                    example: 15
+
+    IngestionResponse:
+      type: object
+      required:
+        - status
+        - book_id
+        - chunks_processed
+      properties:
+        status:
+          type: string
+          enum: [success, processing, failed]
+          description: Status of the ingestion process
+        book_id:
+          type: string
+          description: Identifier for the book that was ingested
+        chunks_processed:
+          type: integer
+          description: Number of content chunks successfully processed
+        processing_time_ms:
+          type: integer
+          description: Time taken to process the book in milliseconds
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+          description: Overall health status
+        timestamp:
+          type: string
+          format: date-time
+          description: Time when the health check was performed
+        services:
+          type: object
+          description: Status of dependent services
+          properties:
+            cohere:
+              type: string
+              enum: [available, unavailable]
+            qdrant:
+              type: string
+              enum: [available, unavailable]
+            postgres:
+              type: string
+              enum: [available, unavailable]
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "INVALID_QUERY"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Query text is required and must be non-empty"
+        details:
+          type: object
+          description: Additional error details (optional)
+          example: {"field": "query"}
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for standard operations
+    admin_api_key:
+      type: apiKey
+      in: header
+      name: X-Admin-API-Key
+      description: Admin API key for ingestion operations

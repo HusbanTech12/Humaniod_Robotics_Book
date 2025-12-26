@@ -1,0 +1,13 @@
+# Capstone Architecture Diagram
+
+This file serves as a placeholder for the capstone architecture diagram.
+The actual diagram should illustrate:
+
+- Complete VLA system integration
+- Voice-Language-Action flow
+- All component interconnections
+- Data flow between modules
+- External system integrations
+- End-to-end pipeline visualization
+
+The diagram should provide a comprehensive view of the entire VLA system architecture.

@@ -1,0 +1,39 @@
+# Voice Processing Configuration for VLA Module
+# Configuration for Whisper-based speech recognition and processing
+
+voice_processing:
+  whisper:
+    model: "base"  # Options: tiny, base, small, medium, large
+    language: "en"
+    sample_rate: 16000
+    chunk_size: 1024
+    energy_threshold: 300
+    pause_threshold: 0.8
+    phrase_threshold: 0.3
+    dynamic_energy_threshold: true
+    timeout: 5.0
+    phrase_time_limit: 10.0
+
+  audio:
+    device_index: null  # Use default microphone
+    sample_rate: 16000
+    chunk_size: 1024
+    format: "int16"
+    channels: 1
+
+  processing:
+    transcription_accuracy: 0.90
+    command_normalization:
+      enabled: true
+      max_command_length: 256
+      allowed_languages: ["en"]
+    intent_extraction:
+      enabled: true
+      confidence_threshold: 0.75
+      max_alternatives: 3
+
+  output:
+    format: "json"
+    timestamp_format: "iso8601"
+    confidence_included: true
+    language_detection: true

@@ -1,0 +1,55 @@
+# Isaac Sim Configuration for VLA Module
+# Configuration for Isaac Sim environment with humanoid robot for VLA system
+
+isaac_sim:
+  environment:
+    scene:
+      name: "vla_environment"
+      objects:
+        - name: "table"
+          type: "table"
+          position: [2.0, 0.0, 0.0]
+          size: [1.0, 0.6, 0.8]
+        - name: "cup"
+          type: "cup"
+          position: [2.2, 0.1, 0.85]
+          color: "red"
+    lighting:
+      enable: true
+      intensity: 1000
+    physics:
+      gravity: [0, 0, -9.81]
+      solver_type: "TGS"
+      substeps: 1
+      dt: 0.008333  # 120 Hz physics update
+
+  robot:
+    model: "unitree_a1"
+    position: [0.0, 0.0, 0.5]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+    sensors:
+      rgb_camera:
+        enabled: true
+        position: [0.2, 0.0, 0.5]
+        orientation: [0.0, 0.0, 0.0, 1.0]
+        resolution: [640, 480]
+        fov: 90
+      depth_camera:
+        enabled: true
+        position: [0.2, 0.0, 0.5]
+        orientation: [0.0, 0.0, 0.0, 1.0]
+        resolution: [640, 480]
+      lidar:
+        enabled: false
+      imu:
+        enabled: true
+        position: [0.0, 0.0, 0.0]
+        orientation: [0.0, 0.0, 0.0, 1.0]
+
+  simulation:
+    rendering_dt: 0.033333  # 30 FPS
+    physics_dt: 0.008333     # 120 Hz
+    enable_cameras: true
+    enable_lidar: false
+    enable_imu: true
+    enable_force_torque: false

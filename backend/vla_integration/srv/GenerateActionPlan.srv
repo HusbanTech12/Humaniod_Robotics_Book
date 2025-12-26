@@ -1,0 +1,11 @@
+# GenerateActionPlan.srv
+# Service definition for generating action plans from voice commands
+
+string command
+string context  # JSON string with environment and robot capabilities
+
+---
+ActionPlan plan
+bool success
+string message
+float32 confidence

@@ -1,0 +1,69 @@
+# VLA Pipeline Configuration
+# Configuration for the complete Vision-Language-Action pipeline
+
+vla_pipeline:
+  voice_processing:
+    enabled: true
+    service_name: "/voice/process_command"
+    timeout: 10.0
+    max_concurrent_requests: 5
+
+  vision_processing:
+    enabled: true
+    service_name: "/vision/localize_object"
+    timeout: 15.0
+    max_concurrent_requests: 3
+    object_detection:
+      confidence_threshold: 0.7
+      max_objects: 10
+      tracking_enabled: true
+
+  planning:
+    enabled: true
+    service_name: "/planning/generate_plan"
+    timeout: 20.0
+    max_concurrent_requests: 2
+    max_plan_steps: 50
+    task_timeout: 30.0
+
+  execution:
+    enabled: true
+    service_name: "/actions/execute_plan"
+    status_service: "/actions/execution_status"
+    timeout: 60.0
+    max_concurrent_plans: 1
+    safety_validation:
+      enabled: true
+      service_name: "/safety/validate_action"
+      timeout: 5.0
+
+  integration:
+    max_voice_command_length: 256
+    command_processing_timeout: 30.0
+    plan_execution_timeout: 300.0  # 5 minutes
+    retry_attempts: 3
+    recovery_enabled: true
+    human_in_the_loop:
+      enabled: true
+      confirmation_required: true
+      critical_actions_only: true
+
+  performance:
+    target_response_time: 5.0  # seconds
+    max_memory_usage: 4096  # MB
+    cpu_usage_limit: 80.0  # percentage
+    logging_level: "INFO"
+
+  safety_constraints:
+    max_velocity: 1.0  # m/s
+    max_acceleration: 2.0  # m/s^2
+    max_force: 50.0  # N
+    workspace_boundaries:
+      x_min: -5.0
+      x_max: 5.0
+      y_min: -5.0
+      y_max: 5.0
+      z_min: 0.0
+      z_max: 3.0
+    collision_threshold: 0.1  # meters
+    emergency_stop_enabled: true

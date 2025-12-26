@@ -1,0 +1,23 @@
+# LocalizeObject.srv
+# Service definition for localizing objects in the environment
+
+string object_description
+string camera_view
+BoundingBox search_area
+
+---
+ObjectDetection[] detections
+bool success
+string message
+time timestamp
+
+# Bounding box for search area
+message BoundingBox
+{
+  float64 x_min
+  float64 x_max
+  float64 y_min
+  float64 y_max
+  float64 z_min
+  float64 z_max
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Chatbot Widget</title>
+    <link rel="stylesheet" href="./styles/chat-widget.css">
+</head>
+<body>
+    <div id="book-chatbot"></div>
+    <script src="./dist/chat-widget.js"></script>
+    <script>
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('bookId');
+        const apiKey = urlParams.get('apiKey');
+        const apiUrl = urlParams.get('apiUrl') || 'http://localhost:8000/v1';
+
+        // Initialize the widget
+        BookChatWidget.init({
+            containerId: 'book-chatbot',
+            apiUrl: apiUrl,
+            bookId: bookId,
+            apiKey: apiKey
+        });
+    </script>
+</body>
+</html>

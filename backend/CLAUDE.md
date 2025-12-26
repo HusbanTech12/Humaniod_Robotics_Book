@@ -196,6 +196,15 @@ If ALL true, suggest:
 
 Wait for consent; never auto-create ADRs. Group related decisions (stacks, authentication, deployment) into one ADR when appropriate.
 
+## Active Technologies
+- Python 3.11+ (for async support and modern features needed for FastAPI and AI integration), FastAPI, cohere, qdrant-client, asyncpg, pydantic v2 (RAG Chatbot - 001-rag-chatbot-book)
+- Python 3.8+ (for ROS 2 compatibility), Markdown for documentation + ROS 2 (Humble Hawksbill recommended), rclpy (Python ROS client library), URDF (Unified Robot Description Format), Gazebo/ignition for simulation (001-physical-ai-robotics)
+- Files (URDF models, launch files, parameter files, documentation) (001-physical-ai-robotics)
+
+## Recent Changes
+- 001-rag-chatbot-book: Added Python 3.11+, FastAPI, cohere, qdrant-client, asyncpg, pydantic v2 (RAG Chatbot implementation)
+- 001-physical-ai-robotics: Added Python 3.8+ (for ROS 2 compatibility), Markdown for documentation + ROS 2 (Humble Hawksbill recommended), rclpy (Python ROS client library), URDF (Unified Robot Description Format), Gazebo/ignition for simulation
+
 ## Basic Project Structure
 
 - `.specify/memory/constitution.md` — Project principles

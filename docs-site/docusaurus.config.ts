@@ -87,6 +87,12 @@ const config: Config = {
           position: 'left',
           label: 'ROS 2 Module',
         },
+        // {
+        //   type: 'docSidebar',
+        //   sidebarId: 'module2Sidebar',
+        //   position: 'left',
+        //   label: 'Digital Twin',
+        // },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/humanoid-robotic-book/humanoid-robotic-book',

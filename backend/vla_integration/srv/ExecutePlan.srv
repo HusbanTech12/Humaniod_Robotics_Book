@@ -1,0 +1,21 @@
+# ExecutePlan.srv
+# Service definition for executing action plans
+
+ActionPlan plan
+string execution_context  # JSON string with robot_id and environment_id
+
+---
+string execution_id
+string status
+float32 estimated_duration
+TaskSequence[] task_sequence
+bool success
+string message
+
+# Task sequence with status
+message TaskSequence
+{
+  string task_id
+  string status
+  float32 estimated_time
+}

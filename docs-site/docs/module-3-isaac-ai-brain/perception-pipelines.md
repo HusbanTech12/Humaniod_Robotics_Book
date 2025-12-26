@@ -405,15 +405,15 @@ ros2 run isaac_ros_utilities latency_analyzer --input-topic /camera/rgb/image_ra
 
 #### Performance Criteria
 - **Processing Rate**: ≥30 FPS for camera processing
-- **Latency**: <50ms end-to-end processing
-- **Resource Usage**: GPU utilization <90%
+- **Latency**: &lt;50ms end-to-end processing
+- **Resource Usage**: GPU utilization &lt;90%
 - **Synchronization**: Multi-sensor sync within 10ms
 
 #### Functional Criteria
 - **Detection Accuracy**: ≥90% for known objects under good conditions
-- **False Positive Rate**: <5% in static environment
+- **False Positive Rate**: &lt;5% in static environment
 - **Sensor Fusion**: Consistent data association across sensors
-- **Depth Accuracy**: <5cm error at 1m distance
+- **Depth Accuracy**: &lt;5cm error at 1m distance
 
 #### Robustness Criteria
 - **Stability**: No crashes during 1-hour continuous operation

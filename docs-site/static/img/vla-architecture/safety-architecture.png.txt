@@ -1,0 +1,13 @@
+# Safety Architecture Diagram
+
+This file serves as a placeholder for the safety architecture diagram.
+The actual diagram should illustrate:
+
+- Safety validation layers
+- Pre-execution checks
+- Real-time monitoring
+- Emergency stop systems
+- Constraint validation
+- Risk assessment and mitigation
+
+The diagram should show the safety architecture integrated throughout the VLA system.

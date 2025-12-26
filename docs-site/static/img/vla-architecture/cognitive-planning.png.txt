@@ -1,0 +1,12 @@
+# Cognitive Planning Architecture Diagram
+
+This file serves as a placeholder for the cognitive planning architecture diagram.
+The actual diagram should illustrate:
+
+- Natural language command input
+- LLM processing and reasoning
+- Task decomposition and planning
+- Action plan validation
+- Integration with vision and execution systems
+
+The diagram should show the cognitive planning process from high-level command to executable action plan.

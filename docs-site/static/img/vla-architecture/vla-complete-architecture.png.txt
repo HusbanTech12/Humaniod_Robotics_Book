@@ -1,0 +1,13 @@
+# Complete VLA Architecture Diagram
+
+This file serves as a placeholder for the complete VLA architecture diagram.
+The actual diagram should illustrate:
+
+- End-to-end VLA pipeline
+- All major components and their relationships
+- Data flow from voice input to action execution
+- Service and message interfaces
+- Safety and monitoring systems
+- Integration points with Isaac Sim and ROS 2
+
+The diagram should provide a comprehensive architectural overview of the entire VLA system.

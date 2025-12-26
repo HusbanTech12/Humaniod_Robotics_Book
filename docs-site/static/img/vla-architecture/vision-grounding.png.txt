@@ -1,0 +1,13 @@
+# Vision Grounding Architecture Diagram
+
+This file serves as a placeholder for the vision grounding architecture diagram.
+The actual diagram should illustrate:
+
+- Camera sensor input
+- Isaac ROS vision processing
+- Object detection and localization
+- 3D spatial reasoning
+- Scene understanding
+- Integration with planning and execution
+
+The diagram should show the flow from visual input to spatially-grounded object information.
