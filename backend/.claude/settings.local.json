@@ -7,7 +7,23 @@
       "Bash(.specify/scripts/bash/setup-plan.sh --json)",
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json)",
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks)",
-      "Bash(git rev-parse --git-dir)"
+      "Bash(git rev-parse --git-dir)",
+      "Bash(if [ -d \"backend/backend\" ])",
+      "Bash(then echo \"Nested backend/backend folder exists\")",
+      "Bash(else echo \"No nested backend/backend folder found\")",
+      "Bash(fi)",
+      "Bash(then ls -la backend/backend/)",
+      "Bash(else echo \"backend/backend directory does not exist\")",
+      "Bash(if [ -d \"backend/src\" ])",
+      "Bash(then echo \"src directory exists in main backend\")",
+      "Bash(else echo \"src directory does not exist in main backend\")",
+      "Bash(python3 main.py)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(python3 -m venv venv)",
+      "Bash(source venv/bin/activate)",
+      "Bash(python main.py)",
+      "Bash(pip install psycopg2-binary)",
+      "Bash(uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000)"
     ]
   }
 }

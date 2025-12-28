@@ -30,7 +30,7 @@ class QdrantManager:
 
         self.collection_name = settings.qdrant_collection_name
 
-    def create_collection(self, vector_size: int = 1024, distance: str = "Cosine"):
+    def create_collection(self, vector_size: int = 1024, distance: str = "COSINE"):
         """
         Create a collection in Qdrant for storing book content embeddings.
 
