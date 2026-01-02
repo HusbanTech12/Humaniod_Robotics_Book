@@ -15,15 +15,15 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://humanoid-robotic-book.github.io',
+  url: 'https://HusbanTech12.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/humanoid-robotic-book/',
+  baseUrl: '/Humaniod_Robotics_Book/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'humanoid-robotic-book', // Usually your GitHub org/user name.
-  projectName: 'humanoid-robotic-book', // Usually your repo name.
+  organizationName: 'HusbanTech12', // Usually your GitHub org/user name.
+  projectName: 'Humaniod_Robotics_Book', // Usually your repo name.
 
   onBrokenLinks: 'throw',
 
@@ -44,7 +44,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/humanoid-robotic-book/humanoid-robotic-book/tree/main/docs-site',
+            'https://github.com/HusbanTech12/Humaniod_Robotics_Book/tree/main/docs-site',
         },
         blog: {
           showReadingTime: true,
@@ -55,7 +55,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/humanoid-robotic-book/humanoid-robotic-book/tree/main/docs-site',
+            'https://github.com/HusbanTech12/Humaniod_Robotics_Book/tree/main/docs-site',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -95,7 +95,7 @@ const config: Config = {
         // },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/humanoid-robotic-book/humanoid-robotic-book',
+          href: 'https://github.com/HusbanTech12/Humaniod_Robotics_Book',
           label: 'GitHub',
           position: 'right',
         },
@@ -139,12 +139,12 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/humanoid-robotic-book/humanoid-robotic-book',
+              href: 'https://github.com/HusbanTech12/Humaniod_Robotics_Book',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Humanoid Robotics Book. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} HusbanTech12. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
