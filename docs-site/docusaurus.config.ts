@@ -15,10 +15,11 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://HusbanTech12.github.io',
+  url: process.env.DEPLOY_ENV === 'vercel' ? 'https://humaniod-robotics-book.vercel.app' : 'https://HusbanTech12.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/Humaniod_Robotics_Book/',
+  // For Vercel deployment, use '/' for root domain
+  baseUrl: process.env.DEPLOY_ENV === 'vercel' ? '/' : '/Humaniod_Robotics_Book/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
