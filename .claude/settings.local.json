@@ -38,7 +38,8 @@
       "Bash(node node_modules/@docusaurus/core/bin/docusaurus.js start --port 3000)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
       "Bash(netstat -tulpn)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/)",
+      "Bash(git commit -m \"chore: Add Vercel configuration and .nojekyll file\n\n- Add vercel.json for SPA routing\n- Add .nojekyll file to bypass Jekyll processing on GitHub Pages\n\nCo-authored-by: Claude Sonnet 4.5 <noreply@anthropic.com>\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\")"
     ],
     "deny": [],
     "ask": []
